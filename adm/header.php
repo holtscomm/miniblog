@@ -5,22 +5,7 @@
 <title>miniblog admin</title>
 <link rel="stylesheet" href="images/styles.css" type="text/css" />
 <script type="text/javascript" src="images/dialog.js"></script>
-<?php
-$wwwroot = "/";
-// Adjust wwwroot to be the wwwroot for your project. I.E. production would use '/'
-if(strstr($_SERVER["SERVER_NAME"], 'localhost'))
-{
-    $wwwroot = "/turfit/";
-}
-else if(strstr($_SERVER["SERVER_NAME"], 'turfit.ca'))
-{
-    if(strstr($_SERVER["REQUEST_URI"], '/new/'))
-    {
-        $wwwroot = "/new/";
-    }
-}
-?>
-<script type="text/javascript" src="<?=$wwwroot?>js/vendor/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="../includes/tinymce/tinymce.min.js"></script>
 <script type="text/javascript">
 tinymce.init({
     selector: "textarea",
