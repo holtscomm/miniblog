@@ -11,7 +11,6 @@
 	<p>
 		<label for="content">Post content:</label><br />
 		<textarea cols="77" rows="10" id="content" name="data[post_content]"><?=htmlspecialchars(stripslashes($post['post_content']))?></textarea><br />
-		<span class="form-text">To format just use raw HTML.. &lt;strong&gt;, &lt;span&gt;, etc</span>
 	</p>
 	
 	

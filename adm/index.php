@@ -86,8 +86,8 @@ switch($mode)
 				{			
 					$response_text = 'Error: You must fill out all fields';
 				}
-				else 
-				{	
+				else
+				{
 					$sql = "UPDATE `miniblog` SET {$sql} WHERE `post_id` = '{$id}'";
 					// Update the post
 					mb_query($sql, $database);
@@ -96,6 +96,11 @@ switch($mode)
 					$post = $result->fetch_assoc();
 					
 					$response_text = 'Post updated';
+					if($result && $data['published'] == 1)
+                    {
+                        // If the post was successful and was published, add a link to it
+                        $response_text .= " - <a href='../?post=".$post['post_slug']."'>view post</a>";
+                    }
 				}
 			}
 		
@@ -199,6 +204,11 @@ switch($mode)
 					$sql = "INSERT INTO `miniblog` ({$fields}) VALUES({$values})";
 					$result = mb_query($sql, $database);
 					$response_text = ($result) ? 'Post added' : 'Post could not be added';
+					if($result && $data['published'] == 1)
+					{
+					    // If the post was successful and was published, add a link to it
+					    $response_text .= " - <a href='../?post=".$data['post_slug']."'>view post</a>";
+					}
 				}
 			
 		}
