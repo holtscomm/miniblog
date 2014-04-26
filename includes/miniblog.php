@@ -11,15 +11,15 @@ if(!defined('IN_BLOG'))
 include(PATH . 'includes/config.php');
 include(PATH . 'includes/functions.php');
 
-$link = mb_connect($sqlconfig);
+$database = mb_connect($sqlconfig);
 unset($sqlconfig);
 
-if(!$link)
+if(!$database)
 {
 	die("Could not connect to MySQL database, check the settings in config.php");
 }
 
-$config = mb_config();
+$config = mb_config($database);
 
 $post	= (string) mysql_real_escape_string($_GET['post']);
 $page	= (int) mysql_real_escape_string(intval($_GET['page']));
@@ -27,14 +27,19 @@ $ppp	= (int) intval($config['posts-per-page']);
 $from	= (int) intval($ppp * $page);
 
 
-$sql = ($post == '') ? 'SELECT * FROM `miniblog` WHERE `published` = 1 ORDER BY `date` DESC LIMIT ' . $from . ', ' . $ppp : "SELECT * FROM `miniblog` WHERE `post_slug` = '{$post}' AND `published` = 1";
+$sql = ($post == '') 
+            ? 'SELECT * FROM `miniblog` WHERE `published` = 1 ORDER BY `date` DESC LIMIT ' . $from . ', ' . $ppp 
+            : "SELECT * FROM `miniblog` WHERE `post_slug` = '{$post}' AND `published` = 1";
 
-$result = mysql_query($sql);
-$total  = mysql_result(mysql_query("SELECT COUNT(*) FROM `miniblog` WHERE `published` = 1"), 0);
+$result = mb_query($sql, $database);
 
-if(mysql_num_rows($result) > 0)
+$total_post_sql = "SELECT COUNT(*) FROM `miniblog` WHERE `published` = 1";
+$total_result = mb_query($total_post_sql, $database);
+$total = $total_result->field_seek(0);
+
+if($result->num_rows > 0)
 { 
-	while($posts = mysql_fetch_array($result))
+	while($posts = $result->fetch_assoc())
 	{
 		
 		$vars = array(

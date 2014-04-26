@@ -5,14 +5,25 @@ if(!defined('IN_ADMIN') || !defined('IN_BLOG'))
 	exit;
 }
 
+// $database should be instantiated by this point by ./admin.php
+if(!$database)
+{
+    die("Database object must exist - something is very wrong");
+}
+
 switch($mode)
 {
 	default:
+    
+    /**
+    * List posts "view"
+    */
 	case 'list':
 				
-		$result = mysql_query('SELECT * FROM `miniblog`') or die(mysql_error());
+		$sql = 'SELECT * FROM `miniblog`';
+		$result = mb_query($sql, $database);
 		
-		while($row = mysql_fetch_assoc($result))
+		while($row = $result->fetch_assoc())
 		{
 			$published = ($row['published'] == 1) ? 'Published' : 'Unpublished';
 			
@@ -27,22 +38,22 @@ switch($mode)
 								</td>
 							</tr>";
 		}
-		
-			
 		include('list.php');
 	break;
 	
 
-
+    /**
+    * Edit post "view"
+    */
 	case 'edit':
 		
 		$id = mysql_real_escape_string($_GET['id']);
 		
 		$post_sql = "SELECT * FROM `miniblog` WHERE `post_id` = '{$id}'";
-		$result = mysql_query($post_sql);
-		$post = mysql_fetch_assoc($result);
+		$result = mb_query($post_sql, $database);
+		$post = $result->fetch_assoc();
 
-		if(mysql_num_rows($result) == 1)
+		if($result->num_rows == 1)
 		{
 			
 			if(isset($_POST['miniblog_PostBack']))
@@ -77,9 +88,12 @@ switch($mode)
 				}
 				else 
 				{	
-					$sql = mysql_query("UPDATE `miniblog` SET {$sql} WHERE `post_id` = '{$id}'") or die(mysql_error());
-					$result = mysql_query($post_sql);
-					$post = mysql_fetch_assoc($result);
+					$sql = "UPDATE `miniblog` SET {$sql} WHERE `post_id` = '{$id}'";
+					// Update the post
+					mb_query($sql, $database);
+					// Get it back again
+					$result = mb_query($post_sql, $database);
+					$post = $result->fetch_assoc();
 					
 					$response_text = 'Post updated';
 				}
@@ -90,15 +104,9 @@ switch($mode)
 		}
 	break;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+	 * Options "view"
+	 */
 	case 'options':
 	
 		if(isset($_POST['miniblog_PostBack']))
@@ -118,7 +126,8 @@ switch($mode)
 					$name = mysql_real_escape_string($name);
 					$value = mysql_real_escape_string($value);
 					
-					$sql = mysql_query("UPDATE `miniblog_config` SET `config_value` = '{$value}' WHERE `config_name` = '{$name}'") or die(mysql_error());
+					$sql = "UPDATE `miniblog_config` SET `config_value` = '{$value}' WHERE `config_name` = '{$name}'";
+					mb_query($sql, $database);
 				
 				}
 				
@@ -134,9 +143,10 @@ switch($mode)
 			
 		}
 		
-		$sql = mysql_query("SELECT * FROM `miniblog_config` WHERE `config_name` <> 'password'");
+		$sql = "SELECT * FROM `miniblog_config` WHERE `config_name` <> 'password'";
+		$result = mb_query($sql, $database);
 		
-		while($row = mysql_fetch_array($sql))
+		while($row = $result->fetch_assoc())
 		{
 			$option_list .= "<p>
 								<label for=\"{$row['config_name']}\">" . str_replace('-', ' ', trim(ucfirst($row['config_name']))) . "</label><br />
@@ -148,22 +158,19 @@ switch($mode)
 		
 	break;
 	
-	
-	
-	
-	
-	
-	
+	/**
+    * Add post "view"
+    */
 	case 'add':
 		
 		if(isset($_POST['miniblog_PostBack']))
 		{
 				$data = $_POST['data'];
 				
-				$data['post_slug'] = mb_slug($_POST['data']['post_title']);
-				$data['date']      = time();
+				$data['post_slug'] = mb_slug($_POST['data']['post_title'], $database);
+				$data['date'] = time();
 				
-				$sql ='';
+				$sql = '';
 				$i = 1;
 				foreach($data as $field => $value)
 				{
@@ -189,7 +196,8 @@ switch($mode)
 				}
 				else
 				{
-					$result = mysql_query("INSERT INTO `miniblog` ({$fields}) VALUES({$values})");
+					$sql = "INSERT INTO `miniblog` ({$fields}) VALUES({$values})";
+					$result = mb_query($sql, $database);
 					$response_text = ($result) ? 'Post added' : 'Post could not be added';
 				}
 			
@@ -199,34 +207,27 @@ switch($mode)
 		
 	break;
 
-
-
-
-
-
-
-
-
-
-
-
+    /**
+    * Delete post "view"
+    */
 	case 'delete':
 		
 		$id = mysql_real_escape_string($_GET['id']);
 		
 		$post_sql = "SELECT * FROM `miniblog` WHERE `post_id` = '{$id}'";
-		$result = mysql_query($post_sql);
+		$result = mb_query($post_sql, $database);
 		
-		if(mysql_num_rows($result) == 1)
+		if($result->num_rows == 1)
 		{
-			$result = mysql_query("DELETE FROM `miniblog` WHERE `post_id` = '{$id}'");
+		    $sql = "DELETE FROM `miniblog` WHERE `post_id` = '{$id}'";
+			$result = mb_query($sql, $database);
 			if($result)
 			{
 				header("Location: admin.php?mode=list");
 			}
 			else
 			{
-				die(mysql_error());
+				die($database->error);
 			}
 		}
 		else
@@ -234,15 +235,10 @@ switch($mode)
 			header("Location: admin.php?mode=list");
 		}
 	break;
-
-
-
-
-
-
-
-
-
+	
+	/**
+    * Login "view"
+    */
 	case 'login':
 	
 		if(isset($_POST['SimplePoll_Login']))
@@ -264,20 +260,11 @@ switch($mode)
 		
 		include('login.php');
 	
-	
 	break;
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	/**
+    * Password "view"
+    */
 	case 'password':
 		
 		if(isset($_POST['miniblog_PostBack']))
@@ -289,14 +276,17 @@ switch($mode)
 				$new_password	  = md5($_POST['new_password']);
 				$confirm_password = md5($_POST['confirm_password']);
 				
-				$real_current_pass = mysql_result(mysql_query("SELECT `config_value` FROM `miniblog_config` WHERE `config_name` = 'password'"), 0);
+				$sql = "SELECT `config_value` FROM `miniblog_config` WHERE `config_name` = 'password'";
+				$result = mb_query($sql, $database);
+				$real_current_pass = $result->field_seek(0);
 				
 				if($current_password == $real_current_pass)
 				{
 					
 					if($new_password == $confirm_password)
 					{
-						$result = mysql_query("UPDATE `miniblog_config` SET `config_value` = '{$new_password}' WHERE `config_name` = 'password'");
+					    $sql = "UPDATE `miniblog_config` SET `config_value` = '{$new_password}' WHERE `config_name` = 'password'";
+						$result = mb_query($sql, $database);
 						if($result)
 						{
 							$response_text = 'Password updated';
@@ -323,22 +313,13 @@ switch($mode)
 			}
 		}
 		
-		
-		
 		include('password.php');
 		
 	break;
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    /**
+    * Logout "view"
+    */
 	case 'logout':
 		$_SESSION['miniblog_Admin'] = false;
 		unset($_SESSION['miniblog_Admin']);

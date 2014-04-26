@@ -1,8 +1,4 @@
 <?php
-/*
-	SimplePoll version 1.0.0
-	(c) 2009 spyka Web Group
-*/
 ob_start();
 session_start();
 
@@ -15,15 +11,15 @@ define('IN_ADMIN', true);
 include(PATH . 'includes/config.php');
 include(PATH . 'includes/functions.php');
 
-$link = mb_connect($sqlconfig);
+$database = mb_connect($sqlconfig);
 unset($sqlconfig);
 
-if(!$link)
+if(!$database)
 {
 	die("Could not connect to MySQL database, check the settings in config.php");
 }
 
-$config = mb_config();
+$config = mb_config($database);
 
 define('PASSWORD', $config['password']);
 
@@ -43,7 +39,6 @@ if(!defined('miniblog_ID') && $mode != 'login')
 
 $header = ($mode == 'login') ? 'simple-header.php' : 'header.php';
 include($header);
-include('index.php');	
+include('index.php');
 include('footer.php');
 ob_end_flush();
-?>
