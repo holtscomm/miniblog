@@ -25,22 +25,27 @@ switch($mode)
 		
 		while($row = $result->fetch_assoc())
 		{
-			$published = ($row['published'] == 1) ? 'Published' : 'Unpublished';
+		    $is_published = $row['published'] == 1 ? true : false;
+			$published = ($is_published) ? 'Published' : 'Unpublished';
 
             // Either link the post title, or explain why it is not linked (in hover text)			
-			$post_title = ($row['published'] == 1) ? 
+			$post_title = ($is_published) ? 
 			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\">{$row['post_title']}</a>" :
 			    "<span title='This post is unpublished and cannot be viewed.'>{$row['post_title']}</span>";
 			    
 			// Either provide a preview link, or don't
-			$preview_link = ($row['published'] == 1) ? 
+			$preview_link = ($is_published) ? 
 			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" : 
 		        '';
 		        
+		    $publish = ($is_published) ?
+		        "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Unpublish?</a>" :
+	            "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Publish?</a>";
+		    
 			$post_list .= "<tr>
 								<td>{$post_title} (<a href=\"admin.php?mode=edit&id={$row['post_id']}\">edit</a>)</td>
 								<td>" . date($config['date-format'], $row['date']) . "</td>
-								<td>{$published}</td>
+								<td>{$published} - {$publish}</td>
 								<td>
 								{$preview_link}
 								<a href=\"admin.php?mode=delete&id={$row['post_id']}\" onclick=\"return confirm_dialog('admin.php?mode=delete&id={$row['post_id']}', 'This will remove the post, are you sure you want to continue?')\"><img src=\"images/delete.png\" alt=\"Remove\" /></a>
