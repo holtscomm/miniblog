@@ -1,8 +1,8 @@
 <?php
 ob_start();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Miniblog Installer</title>
@@ -79,12 +79,12 @@ a {
 	include(PATH . 'includes/config.php');
 	include(PATH . 'includes/functions.php');
 	
-	$link = mb_connect($sqlconfig);
+	$database = mb_connect($sqlconfig);
 	
 	/* installer vars */
 	$install_step = (int) $_GET['step'];
 	
-	$dbl = mysql_select_db($sqlconfig['dbname'], $link);
+	$dbl = $database->select_db($sqlconfig['dbname']);
 		
 	$success = '<span class="success">Success!</span><br />';
 	$fail    = '<span class="error">Failed!</span><br />';
@@ -99,9 +99,9 @@ a {
 	if($install_step == 1 || $install_step == 0)
 	{
 	
-		echo 'Testing connection....';
+		echo 'Testing connection...';
 		
-		if(!$link)
+		if(!$database)
 		{
 			echo $fail;
 			echo(sprintf($sql_error, mysql_error()));
@@ -111,7 +111,7 @@ a {
 		else 
 		{
 			echo $success;
-			echo 'Testing database....';
+			echo 'Testing database...';
 			
 			
 			if(!$dbl)
@@ -133,7 +133,7 @@ a {
 	
 	if($install_step == 2)
 	{
-		if(!$link || !$dbl)
+		if(!$database || !$dbl)
 		{
 			header("Location: install.php");
 			exit;
@@ -151,7 +151,7 @@ a {
 				  PRIMARY KEY  (`post_id`)
 				)";
 				
-		$result = mysql_query($sql, $link);
+		$result = mb_query($sql, $database);
 		
 		$sql = "CREATE TABLE `miniblog_config` (
 				  `config_name` varchar(255) NOT NULL default '',
@@ -159,7 +159,7 @@ a {
 				  `config_explain` longtext NOT NULL
 				)";
 		
-		$result2 = mysql_query($sql, $link);
+		$result2 = mb_query($sql, $database);
 		
 		if(!$result || !$result2)
 		{	
@@ -179,12 +179,12 @@ a {
 					('miniblog-filename', 'index.php', 'Name of the file which miniblog.php is included into'),
 					('use-modrewrite', 1, 'Use modrewrite for post URLs - use 1 for yes, 0 for no.')";
 			
-			$result = mysql_query($sql, $link);	
+			$result = mb_query($sql, $database);	
 			
 			$sql = "INSERT INTO `miniblog` (`post_slug`, `post_title`, `post_content`, `date`, `published`) VALUES
 ('welcome-to-miniblog', 'Welcome to miniblog!', '<p>Welcome to your new installation of miniblog. To remove or edit this post, add new posts and change options login to your admin panel.</p>', " . time() . ", 1)";
 	
-			$result2 = mysql_query($sql, $link);
+			$result2 = mb_query($sql, $database);
 
 			if(!$result || !$result2)
 			{

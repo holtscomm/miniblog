@@ -12,7 +12,7 @@ include('includes/miniblog.php');
 <body>
 <div class="container">
 	<div class="page-header">
-	    <h1>Campaign Updates</h1>
+	    <h1>Miniblog Default</h1>
 	</div>
 	<div>
     	<?= $miniblog_posts ?>
