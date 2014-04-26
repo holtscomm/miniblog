@@ -26,10 +26,19 @@ switch($mode)
 		while($row = $result->fetch_assoc())
 		{
 			$published = ($row['published'] == 1) ? 'Published' : 'Unpublished';
-			
-			$preview_link = ($row['published'] == 1) ? "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" : '';
+
+            // Either link the post title, or explain why it is not linked (in hover text)			
+			$post_title = ($row['published'] == 1) ? 
+			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\">{$row['post_title']}</a>" :
+			    "<span title='This post is unpublished and cannot be viewed.'>{$row['post_title']}</span>";
+			    
+			// Either provide a preview link, or don't
+			$preview_link = ($row['published'] == 1) ? 
+			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" : 
+		        '';
+		        
 			$post_list .= "<tr>
-								<td><a href=\"admin.php?mode=edit&id={$row['post_id']}\">{$row['post_title']}</a></td>
+								<td>{$post_title} (<a href=\"admin.php?mode=edit&id={$row['post_id']}\">edit</a>)</td>
 								<td>" . date($config['date-format'], $row['date']) . "</td>
 								<td>{$published}</td>
 								<td>
