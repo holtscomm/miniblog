@@ -27,8 +27,12 @@ $ppp	= (int) intval($config['posts-per-page']);
 $from	= (int) intval($ppp * $page);
 $category_name = (string) $database->real_escape_string($_GET['category']);
 $category_id = $category_name != "" ? get_category_id($category_name, $database) : null;
+$preview = (string) $database->real_escape_string($_GET['preview']);
 
-$sql = "SELECT * FROM `miniblog` WHERE `published` = 1";
+$sql = "SELECT * FROM `miniblog` WHERE";
+
+$sql .= $preview == "" ? "`published` = 1" :
+						 "`published` is not null";
 
 if($category_id != null)
 {
