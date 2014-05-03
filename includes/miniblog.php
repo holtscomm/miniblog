@@ -26,7 +26,6 @@ $page	= (int) $database->real_escape_string(intval($_GET['page']));
 $ppp	= (int) intval($config['posts-per-page']);
 $from	= (int) intval($ppp * $page);
 $category_name = (string) $database->real_escape_string($_GET['category']);
-echo $category_name;
 $category_id = $category_name != "" ? get_category_id($category_name, $database) : null;
 
 $sql = "SELECT * FROM `miniblog` WHERE `published` = 1";
@@ -76,13 +75,15 @@ if($result->num_rows > 0)
 }
 
 $single = $post != '';
-
+$category_link = $category_id != null ? "&category={$category_name}" : "";
 if($total > ($from + $ppp))
 {
-	$miniblog_previous = '<a href="' . $config['miniblog-filename'] . '?page=' . ($page + 1)  . '">&laquo; Older posts</a>';
+	$miniblog_previous = '<a href="' . $config['miniblog-filename'] .
+						 '?page=' . ($page + 1) . $category_link . '">&laquo; Older posts</a>';
 }
 if($from > 0)
 {
-	$miniblog_next = '<a href="' . $config['miniblog-filename'] . '?page=' . ($page - 1)  . '">Recent posts &raquo;</a>';
+	$miniblog_next = '<a href="' . $config['miniblog-filename'] .
+	 				'?page=' . ($page - 1) . $category_link . '">Recent posts &raquo;</a>';
 }
 ?>

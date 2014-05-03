@@ -3,6 +3,7 @@
 	<table>
 		<tr>
 			<th>Post name</th>
+			<th>Post Category</th>
 			<th>Posted</th>
 			<th>Status</th>
 			<th>Actions</th>
