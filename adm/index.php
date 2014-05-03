@@ -30,16 +30,22 @@ switch($mode)
 
             // Either link the post title, or explain why it is not linked (in hover text)
 			$post_title = ($is_published) ?
-			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\">{$row['post_title']}</a>" :
-			    "<span title='This post is unpublished and cannot be viewed.'>{$row['post_title']}</span>";
+			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\" target='_blank'>{$row['post_title']}</a>" :
+			    "<span title='This post is unpublished and can only be previewed.'>{$row['post_title']}</span>";
 
 			// $row['post_category'] will be the category id, so it must be converted
 			$post_category_name = get_category_name_for_id($row['post_category'], $database);
+
+			$post_category = $post_category_name != "" ? "<a href='../?category={$post_category_name}'>{$post_category_name}</a>" :
+														 "&lt;none&gt;";
 
 			// Either provide a preview link, or don't
 			$preview_link = ($is_published) ?
 			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" :
 		        '';
+
+			$date_published = $is_published ? date($config['date-format'], $row['date']) :
+											  "Not published, <a href='../{$config['miniblog-filename']}?post={$row['post_slug']}&preview=y' target='_blank'>preview?</a>";
 
 		    $publish = ($is_published) ?
 		        "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Unpublish?</a>" :
@@ -47,8 +53,8 @@ switch($mode)
 
 			$post_list .= "<tr>
 								<td>{$post_title} (<a href=\"admin.php?mode=edit&id={$row['post_id']}\">edit</a>)</td>
-								<td><a href='../?category={$post_category_name}'>{$post_category_name}</a></td>
-								<td>" . date($config['date-format'], $row['date']) . "</td>
+								<td>{$post_category}</td>
+								<td>{$date_published}</td>
 								<td>{$published} - {$publish}</td>
 								<td>
 								{$preview_link}
