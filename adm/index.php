@@ -14,36 +14,40 @@ if(!$database)
 switch($mode)
 {
 	default:
-    
+
     /**
     * List posts "view"
     */
 	case 'list':
-				
+
 		$sql = 'SELECT * FROM `miniblog`';
 		$result = mb_query($sql, $database);
-		
+
 		while($row = $result->fetch_assoc())
 		{
 		    $is_published = $row['published'] == 1 ? true : false;
 			$published = ($is_published) ? 'Published' : 'Unpublished';
 
-            // Either link the post title, or explain why it is not linked (in hover text)			
-			$post_title = ($is_published) ? 
+            // Either link the post title, or explain why it is not linked (in hover text)
+			$post_title = ($is_published) ?
 			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\">{$row['post_title']}</a>" :
 			    "<span title='This post is unpublished and cannot be viewed.'>{$row['post_title']}</span>";
-			    
+
+			// $row['post_category'] will be the category id, so it must be converted
+			$post_category_name = get_category_name_for_id($row['post_category'], $database);
+
 			// Either provide a preview link, or don't
-			$preview_link = ($is_published) ? 
-			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" : 
+			$preview_link = ($is_published) ?
+			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" :
 		        '';
-		        
+
 		    $publish = ($is_published) ?
 		        "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Unpublish?</a>" :
 	            "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Publish?</a>";
-		    
+
 			$post_list .= "<tr>
 								<td>{$post_title} (<a href=\"admin.php?mode=edit&id={$row['post_id']}\">edit</a>)</td>
+								<td><a href='../?category={$post_category_name}'>{$post_category_name}</a></td>
 								<td>" . date($config['date-format'], $row['date']) . "</td>
 								<td>{$published} - {$publish}</td>
 								<td>
@@ -54,32 +58,34 @@ switch($mode)
 		}
 		include('list.php');
 	break;
-	
+
 
     /**
     * Edit post "view"
     */
 	case 'edit':
-		
-		$id = mysql_real_escape_string($_GET['id']);
-		
+
+		$id = $database->real_escape_string($_GET['id']);
+
 		$post_sql = "SELECT * FROM `miniblog` WHERE `post_id` = '{$id}'";
 		$result = mb_query($post_sql, $database);
 		$post = $result->fetch_assoc();
 
 		if($result->num_rows == 1)
 		{
-			
+
 			if(isset($_POST['miniblog_PostBack']))
 			{
-				
+
 				$data = $_POST['data'];
-				
+
+				$data['post_category'] = create_category($data['post_category'], $database);
+
 				if($_POST['data']['post_title'] != $post['post_title'])
 				{
 					$data['post_slug'] = mb_slug($_POST['data']['post_title']);
 				}
-				
+
 				$sql = '';
 				$i = 1;
 				foreach($data as $field => $value)
@@ -89,15 +95,15 @@ switch($mode)
 						$failed = true;
 						break;
 					}
-					
-					$sql .= "`" . mysql_real_escape_string($field) . "` = '" . mysql_real_escape_string($value) . "'";
+
+					$sql .= "`" . $database->real_escape_string($field) . "` = '" . $database->real_escape_string($value) . "'";
 					$sql .= ($i == sizeof($data)) ? '' : ', ';
-										
+
 					$i++;
 				}
-				
+
 				if($failed)
-				{			
+				{
 					$response_text = 'Error: You must fill out all fields';
 				}
 				else
@@ -108,7 +114,7 @@ switch($mode)
 					// Get it back again
 					$result = mb_query($post_sql, $database);
 					$post = $result->fetch_assoc();
-					
+
 					$response_text = 'Post updated';
 					if($result && $data['published'] == 1)
                     {
@@ -117,39 +123,39 @@ switch($mode)
                     }
 				}
 			}
-		
-						
+
+
 			include('edit.php');
 		}
 	break;
-	
+
 	/**
 	 * Options "view"
 	 */
 	case 'options':
-	
+
 		if(isset($_POST['miniblog_PostBack']))
 		{
-			
+
 				$data = $_POST['data'];
 
 				foreach($data as $name => $value)
 				{
-					
+
 					if($value == '')
 					{
 						$failed = true;
 						break;
 					}
-					
-					$name = mysql_real_escape_string($name);
-					$value = mysql_real_escape_string($value);
-					
+
+					$name = $database->real_escape_string($name);
+					$value = $database->real_escape_string($value);
+
 					$sql = "UPDATE `miniblog_config` SET `config_value` = '{$value}' WHERE `config_name` = '{$name}'";
 					mb_query($sql, $database);
-				
+
 				}
-				
+
 				if($failed)
 				{
 					$response_text = 'Error: You must fill out all fields';
@@ -157,14 +163,14 @@ switch($mode)
 				else
 				{
 					$response_text = 'Options updated';
-				}			
-				
-			
+				}
+
+
 		}
-		
+
 		$sql = "SELECT * FROM `miniblog_config` WHERE `config_name` <> 'password'";
 		$result = mb_query($sql, $database);
-		
+
 		while($row = $result->fetch_assoc())
 		{
 			$option_list .= "<p>
@@ -172,23 +178,23 @@ switch($mode)
 								<input type=\"text\" name=\"data[{$row['config_name']}]\" value=\"" . stripslashes($row['config_value']) . "\" id=\"{$row['config_name']}\" /><br /><span class=\"form-text\">{$row['config_explain']}</span>
 							</p>";
 		}
-	
+
 		include('options.php');
-		
+
 	break;
-	
+
 	/**
     * Add post "view"
     */
 	case 'add':
-		
+
 		if(isset($_POST['miniblog_PostBack']))
 		{
 				$data = $_POST['data'];
-				
+				$failed = false;
 				$data['post_slug'] = mb_slug($_POST['data']['post_title'], $database);
 				$data['date'] = time();
-				
+				$data['post_category'] = create_category($data['post_category'], $database);
 				$sql = '';
 				$i = 1;
 				foreach($data as $field => $value)
@@ -198,24 +204,24 @@ switch($mode)
 						$failed = true;
 						break;
 					}
-					$fields .= "`" . mysql_real_escape_string($field) . "`";
-					$values .= "'" . mysql_real_escape_string($value) . "'";
-					
+					$fields .= "`" . $database->real_escape_string($field) . "`";
+					$values .= "'" . $database->real_escape_string($value) . "'";
+
 					$values .= ($i == sizeof($data)) ? '' : ', ';
 					$fields .= ($i == sizeof($data)) ? '' : ', ';
-					
+
 					$i++;
 				}
-				
+
 				$post = $_POST['data'];
-				
+
 				if($failed)
 				{
 					$response_text = 'Error: You must fill out all fields';
 				}
 				else
 				{
-					$sql = "INSERT INTO `miniblog` ({$fields}) VALUES({$values})";
+					$sql = "INSERT INTO `miniblog` ({$fields}) VALUES ({$values})";
 					$result = mb_query($sql, $database);
 					$response_text = ($result) ? 'Post added' : 'Post could not be added';
 					if($result && $data['published'] == 1)
@@ -224,23 +230,23 @@ switch($mode)
 					    $response_text .= " - <a href='../?post=".$data['post_slug']."'>view post</a>";
 					}
 				}
-			
+
 		}
-		
+
 		include('edit.php');
-		
+
 	break;
 
     /**
     * Delete post "view"
     */
 	case 'delete':
-		
-		$id = mysql_real_escape_string($_GET['id']);
-		
+
+		$id = $database->real_escape_string($_GET['id']);
+
 		$post_sql = "SELECT * FROM `miniblog` WHERE `post_id` = '{$id}'";
 		$result = mb_query($post_sql, $database);
-		
+
 		if($result->num_rows == 1)
 		{
 		    $sql = "DELETE FROM `miniblog` WHERE `post_id` = '{$id}'";
@@ -259,12 +265,12 @@ switch($mode)
 			header("Location: admin.php?mode=list");
 		}
 	break;
-	
+
 	/**
     * Login "view"
     */
 	case 'login':
-	
+
 		if(isset($_POST['SimplePoll_Login']))
 		{
 			if(md5($_POST['password']) == PASSWORD)
@@ -273,7 +279,7 @@ switch($mode)
 				$_SESSION['miniblog_Admin'] = true;
 				$_SESSION['miniblog_AdminPass'] = PASSWORD;
 				define('miniblog_ID', md5(time()));
-				
+
 				header('Location: admin.php?mode=list');
 			}
 			else
@@ -281,32 +287,32 @@ switch($mode)
 				$error_text = 'Incorrect password';
 			}
 		}
-		
+
 		include('login.php');
-	
+
 	break;
-	
+
 	/**
     * Password "view"
     */
 	case 'password':
-		
+
 		if(isset($_POST['miniblog_PostBack']))
 		{
-		
+
 			if($_POST['current_password'] != '' && $_POST['new_password'] != '' && $_POST['confirm_password'] != '')
 			{
 				$current_password = md5($_POST['current_password']);
 				$new_password	  = md5($_POST['new_password']);
 				$confirm_password = md5($_POST['confirm_password']);
-				
+
 				$sql = "SELECT `config_value` FROM `miniblog_config` WHERE `config_name` = 'password'";
 				$result = mb_query($sql, $database);
 				$real_current_pass = $result->field_seek(0);
-				
+
 				if($current_password == $real_current_pass)
 				{
-					
+
 					if($new_password == $confirm_password)
 					{
 					    $sql = "UPDATE `miniblog_config` SET `config_value` = '{$new_password}' WHERE `config_name` = 'password'";
@@ -324,21 +330,21 @@ switch($mode)
 					{
 						$response_text = 'Both passwords must match';
 					}
-	
+
 				}
 				else
 				{
 					$response_text = 'Current password incorrect';
-				}			
+				}
 			}
 			else
 			{
 				$response_text = 'You must fill out all fields';
 			}
 		}
-		
+
 		include('password.php');
-		
+
 	break;
 
     /**
@@ -351,6 +357,6 @@ switch($mode)
 		session_destroy();
 		header('Location: admin.php?mode=login');
 	break;
-		
+
 }
 ?>

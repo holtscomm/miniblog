@@ -23,7 +23,7 @@ $config = mb_config($database);
 
 define('PASSWORD', $config['password']);
 
-$mode = mysql_real_escape_string($_GET['mode']);
+$mode = $database->real_escape_string($_GET['mode']);
 
 if(isset($_SESSION['miniblog_Admin']))
 {
