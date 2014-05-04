@@ -128,7 +128,7 @@ div.page {
 	padding:10px;
 	margin:0 auto;
 }
-form.login { 
+form.login {
 	width:50%;
 	margin:0 auto;
 	padding:0;
@@ -156,4 +156,3 @@ span.error-text {
 	font-size:0.9em;
 	font-family:Geneva, Arial, Helvetica, sans-serif;
 }
-
