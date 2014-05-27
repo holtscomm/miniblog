@@ -4,7 +4,11 @@
 <title>Miniblog Admin</title>
 <link rel="stylesheet" href="images/styles.css" type="text/css" />
 <script type="text/javascript" src="images/dialog.js"></script>
-<script type="text/javascript" src="../includes/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="../includes/js/tinymce/tinymce.min.js"></script>
+<script type="text/javascript" src="../includes/js/knockout-3.1.0.js"></script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="../includes/js/moment.min.js"></script>
+<script type="text/javascript" src="../includes/js/posts.list.js"></script>
 <script type="text/javascript">
 tinymce.init({
     selector: "textarea",
@@ -30,5 +34,5 @@ tinymce.init({
 		<li><a href="admin.php?mode=logout" onclick="return confirm_dialog('admin.php?mode=logout', 'Are you sure you want to logout?');">Logout</a></li>
 	</ul>
 	<br class="clear" />
-	
+
 </div>
