@@ -13,7 +13,7 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
     self.postCategoryId = postCategory;
     self.postCategoryName = categoryMap[postCategory];
     self.postCategoryLink = ko.computed(function() {
-        return "<a href='" +DOCUMENT_ROOT + "?category=postCategory'>" + self.postCategoryName + "</a>";
+        return DOCUMENT_ROOT + "?category=postCategory";
     });
     self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
     self.published = published == 1;

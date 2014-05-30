@@ -15,7 +15,7 @@ include('header.php');
     <tbody data-bind="foreach: posts">
         <tr>
             <td data-bind="text: postSlug"></td>
-            <td data-bind="html: postCategoryLink"></td>
+            <td><a data-bind="attr: { href: postCategoryLink }"><span data-bind="text: postCategoryName"></span></a></td>
             <td data-bind="text: publishDate"></td>
             <!-- ko if: published -->
             <td>Published <a data-bind="attr: { href: publishLink }">Unpublish?</a></td>
