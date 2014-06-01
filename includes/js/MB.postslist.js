@@ -3,7 +3,10 @@
  */
 var MB = (MB || {});
 
-PUBLISH_LINK = ADMIN_DOCUMENT_ROOT + "post/publish.php";
+MB.CONST.Posts = {
+    PUBLISH_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/publish.php",
+    REMOVE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/remove.php"
+};
 
 function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, categoryMap) {
     var self = this;
@@ -17,10 +20,17 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
     self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
     self.published = ko.observable(parseInt(published));
     // Convenience links
-    self.postCategoryLink = DOCUMENT_ROOT + "?category=postCategory";
-    self.editLink = ADMIN_DOCUMENT_ROOT + "admin.php?mode=edit&id=" + postId;
+    self.postCategoryLink = ko.computed(function() {
+        if(self.postCategoryId) {
+            return MB.CONST.SiteSettings.DOCUMENT_ROOT + "?category=" + self.postCategoryName;
+        }
+        else {
+            return undefined;
+        }
+    });
+    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "admin.php?mode=edit&id=" + postId;
     self.viewLink = ko.computed(function() {
-        var first = DOCUMENT_ROOT + "?post=" + self.postSlug;
+        var first = MB.CONST.SiteSettings.DOCUMENT_ROOT + "?post=" + self.postSlug;
         if(self.published()) {
             return first;
         }
@@ -28,7 +38,7 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
             return first + "&preview=y";
         }
     });
-    self.deleteLink = ADMIN_DOCUMENT_ROOT + "post/delete.php?postid=" + self.postId;
+    self.deleteLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/delete.php?postid=" + self.postId;
 }
 
 function PostListViewModel() {
@@ -40,7 +50,6 @@ function PostListViewModel() {
 
     self.initData = function() {
         $.getJSON("../adm/post/", function(allData) {
-            // debugger;
             var mappedPosts = ko.utils.arrayMap(allData, function(item) {
                 return new PostModel(
                     item.post_id,
@@ -57,7 +66,7 @@ function PostListViewModel() {
         });
     }
 
-    self.getCategoryMappings = function() {
+    self.getCategoryMappingsAndInitData = function() {
         $.getJSON("../adm/category/map.php", function(categories) {
             var mappedCategories = new Array();
             ko.utils.arrayForEach(categories, function(category) {
@@ -65,7 +74,8 @@ function PostListViewModel() {
             });
 
             self.categoryMap(mappedCategories);
-
+            // Doing this here because sometimes there was a race condition that
+            // caused the category column to be empty.
             self.initData();
         });
     }
@@ -76,11 +86,21 @@ function PostListViewModel() {
             "published": post.published()
         }
         // Using $.post to do a POST request to the publishLink
-        $.post(PUBLISH_LINK, data, function(returnedData) {
+        $.post(MB.CONST.Posts.PUBLISH_LINK, data, function(returnedData) {
             post.published(returnedData.published)
         });
-
     }
 
-    self.getCategoryMappings();
+    self.deletePost = function(post) {
+        if(confirm("Are you sure you want to delete the post " + post.postTitle + "?")) {
+            var data = {
+                "postid": post.postId
+            };
+            $.post(MB.CONST.Posts.REMOVE_LINK, data, function(returnedData) {
+                self.posts.remove(post);
+            });
+        }
+    }
+
+    self.getCategoryMappingsAndInitData();
 }

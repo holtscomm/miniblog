@@ -9,8 +9,14 @@ include('../../includes/functions.php');
 $database = mb_connect($sqlconfig);
 unset($sqlconfig);
 
-// Should be calling this without parameters
-$sql = "SELECT * FROM `miniblog`";
+// Optional 'limit' parameter
+$limit = 1000;
+if(isset($_REQUEST['limit']))
+{
+    $limit = (int) intval($_REQUEST['limit']);
+}
+
+$sql = "SELECT * FROM `miniblog` ORDER BY date DESC LIMIT 0, $limit";
 
 $posts = mb_query($sql, $database);
 

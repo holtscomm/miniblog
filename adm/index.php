@@ -15,54 +15,8 @@ switch($mode)
 {
 	default:
 
-    /**
-    * List posts "view"
-    */
 	case 'list':
-
-		$sql = 'SELECT * FROM `miniblog`';
-		$result = mb_query($sql, $database);
-
-		while($row = $result->fetch_assoc())
-		{
-		    $is_published = $row['published'] == 1 ? true : false;
-			$published = ($is_published) ? 'Published' : 'Unpublished';
-
-            // Either link the post title, or explain why it is not linked (in hover text)
-			$post_title = ($is_published) ?
-			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\" target='_blank'>{$row['post_title']}</a>" :
-			    "<span title='This post is unpublished and can only be previewed.'>{$row['post_title']}</span>";
-
-			// $row['post_category'] will be the category id, so it must be converted
-			$post_category_name = get_category_name_for_id($row['post_category'], $database);
-
-			$post_category = $post_category_name != "" ? "<a href='../?category={$post_category_name}'>{$post_category_name}</a>" :
-														 "&lt;none&gt;";
-
-			// Either provide a preview link, or don't
-			$preview_link = ($is_published) ?
-			    "<a href=\"../{$config['miniblog-filename']}?post={$row['post_slug']}\"><img src=\"images/view.png\" alt=\"View post\" /></a>&nbsp;&nbsp;&nbsp;" :
-		        '';
-
-			$date_published = $is_published ? date($config['date-format'], $row['date']) :
-											  "Not published, <a href='../{$config['miniblog-filename']}?post={$row['post_slug']}&preview=y' target='_blank'>preview?</a>";
-
-		    $publish = ($is_published) ?
-		        "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Unpublish?</a>" :
-	            "<a href='post/publish.php?postid={$row['post_id']}&published={$row['published']}'>Publish?</a>";
-
-			$post_list .= "<tr>
-								<td>{$post_title} (<a href=\"admin.php?mode=edit&id={$row['post_id']}\">edit</a>)</td>
-								<td>{$post_category}</td>
-								<td>{$date_published}</td>
-								<td>{$published} - {$publish}</td>
-								<td>
-								{$preview_link}
-								<a href=\"admin.php?mode=delete&id={$row['post_id']}\" onclick=\"return confirm_dialog('admin.php?mode=delete&id={$row['post_id']}', 'This will remove the post, are you sure you want to continue?')\"><img src=\"images/delete.png\" alt=\"Remove\" /></a>
-								</td>
-							</tr>";
-		}
-		include('list.php');
+		echo "<p>Please use <a href='list.php'>list.php</a> instead.</p>";
 	break;
 
 
@@ -259,7 +213,7 @@ switch($mode)
 			$result = mb_query($sql, $database);
 			if($result)
 			{
-				header("Location: admin.php?mode=list");
+				header("Location: list.php");
 			}
 			else
 			{
@@ -268,7 +222,7 @@ switch($mode)
 		}
 		else
 		{
-			header("Location: admin.php?mode=list");
+			header("Location: list.php");
 		}
 	break;
 
@@ -286,7 +240,7 @@ switch($mode)
 				$_SESSION['miniblog_AdminPass'] = PASSWORD;
 				define('miniblog_ID', md5(time()));
 
-				header('Location: admin.php?mode=list');
+				header('Location: list.php');
 			}
 			else
 			{
