@@ -91,15 +91,15 @@ function generate_option_list($list_items = array(), $selected)
  * This function takes a comma-separated list of category_ids and returns the ids and names
  * in an array of arrays like:
  * $category_names = {
-     {
-         "cat_id" => 2,
-         "name" => "pizza"
-     },
-     {
-         "cat_id" => 65,
-         "name" => "hamburgers"
-     }
- }
+ *     {
+ *         "cat_id" => 2,
+ *         "name" => "pizza"
+ *     },
+ *     {
+ *         "cat_id" => 65,
+ *         "name" => "hamburgers"
+ *     }
+ * }
  */
 function get_category_names_for_ids($category_ids, $database)
 {
