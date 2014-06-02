@@ -1,8 +1,4 @@
 <?php
-/*
-	miniblog v 1.0.0
-	copyright 2009
-*/
 if(!defined('IN_BLOG'))
 {
 	exit;
@@ -59,13 +55,14 @@ if($result->num_rows > 0)
 {
 	while($posts = $result->fetch_assoc())
 	{
-
+		$post_category_name = get_category_name_for_id($posts['post_category'], $database);
 		$vars = array(
 			'$postid$' => $posts['post_id'],
 			'$posturl$' => ($config['use-modrewrite'] == 1) ? $posts['post_slug'] : $config['miniblog-filename'] . '?post=' . $posts['post_slug'],
 			'$posttitle$' => stripslashes($posts['post_title']),
 			'$postdate$' => date($config['date-format'], $posts['date']),
 			'$postcontent$' => stripslashes($posts['post_content']),
+			'$postcategoryname$' => $post_category_name
 		);
 
 		$template_vars = array_keys($vars);
