@@ -65,8 +65,9 @@ function PostListViewModel() {
                 );
             });
             self.posts(mappedPosts);
+            
+            self.postsLoaded(true);
         });
-        self.postsLoaded(true);
     }
 
     self.getCategoryMappings = function() {
