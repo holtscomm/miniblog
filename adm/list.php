@@ -15,7 +15,7 @@ include('header.php');
     <tbody data-bind="foreach: posts">
         <tr>
             <td>
-                <a data-bind="attr: { href: viewLink }"><span data-bind="text: postTitle"></span></a>
+                <a data-bind="attr: { href: viewLink }, text: postTitle" target="_blank"></a>
                 (<a data-bind="attr: { href: editLink }">edit</a>)
             </td>
             <td>
@@ -23,16 +23,21 @@ include('header.php');
                 <span data-bind="ifnot: postCategoryId">&lt;none&gt;</span>
             </td>
             <!-- ko if: published -->
-            <td>Published - <a href="#" data-bind="click: $parent.publishPost.bind($data)">Unpublish?</a></td>
+            <td>Published - <a href="#" data-bind="click: $parent.publishPost">Unpublish?</a></td>
             <!-- /ko -->
             <!-- ko ifnot: published -->
-            <td>Unpublished - <a href="#" data-bind="click: $parent.publishPost.bind($data)">Publish?</a></td>
+            <td>Unpublished - <a href="#" data-bind="click: $parent.publishPost">Publish?</a></td>
             <!-- /ko -->
             <td data-bind="text: publishDate"></td>
             <td><a href="#" data-bind="click: $parent.deletePost.bind($data)">Delete post</a></td>
         </tr>
     </tbody>
 </table>
+
+<div data-bind="ifnot: postsLoaded" class="text-center">
+    <img src="../includes/spinnerLarge.gif" title="Loading posts" />
+    <h3>Loading posts...</h3>
+</div>
 
 
 <script type="text/javascript">

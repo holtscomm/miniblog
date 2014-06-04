@@ -47,7 +47,8 @@ $result = mb_query($sql, $database);
 
 $total_post_sql = "SELECT COUNT(*) FROM `miniblog` WHERE `published` = 1";
 $total_result = mb_query($total_post_sql, $database);
-$total = $total_result->fetch_array()[0];
+$total_array = $total_result->fetch_array();
+$total = $total_array[0];
 
 $miniblog_posts = "";
 

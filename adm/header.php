@@ -39,7 +39,7 @@ tinymce.init({
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="">Miniblog Admin</a>
+          <a class="navbar-brand" href="list.php">Miniblog Admin</a>
         </div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">

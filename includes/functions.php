@@ -124,7 +124,8 @@ function get_category_name_for_id($category_id, $database)
     $result = mb_query($sql, $database);
     if($result)
     {
-        $category_name = $result->fetch_assoc()["name"];
+        $name = $result->fetch_assoc();
+        $category_name = $name["name"];
     }
     return $category_name;
 }
@@ -146,7 +147,8 @@ function get_category_id($category_name, $database)
 
     if($result && $result->num_rows >= 1)
     {
-        $category_exists = $result->fetch_assoc()["cat_id"];
+		$category = $result->fetch_assoc();
+        $category_exists = $category["cat_id"];
     }
 
     $result->close();

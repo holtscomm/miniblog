@@ -47,6 +47,8 @@ function PostListViewModel() {
     self.posts = ko.observableArray();
     self.loaded = ko.observable(false);
     self.categoryMap = ko.observableArray();
+    self.categoriesMapped = ko.observable(false);
+    self.postsLoaded = ko.observable(false);
 
     self.initData = function() {
         $.getJSON("../adm/post/", function(allData) {
@@ -64,9 +66,10 @@ function PostListViewModel() {
             });
             self.posts(mappedPosts);
         });
+        self.postsLoaded(true);
     }
 
-    self.getCategoryMappingsAndInitData = function() {
+    self.getCategoryMappings = function() {
         $.getJSON("../adm/category/map.php", function(categories) {
             var mappedCategories = new Array();
             ko.utils.arrayForEach(categories, function(category) {
@@ -74,8 +77,7 @@ function PostListViewModel() {
             });
 
             self.categoryMap(mappedCategories);
-            // Doing this here because sometimes there was a race condition that
-            // caused the category column to be empty.
+
             self.initData();
         });
     }
@@ -102,5 +104,5 @@ function PostListViewModel() {
         }
     }
 
-    self.getCategoryMappingsAndInitData();
+    self.getCategoryMappings();
 }
