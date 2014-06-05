@@ -133,10 +133,10 @@ switch($mode)
 
 		while($row = $result->fetch_assoc())
 		{
-			$option_list .= "<p>
+			$option_list .= "<div class='form-group'>
 								<label for=\"{$row['config_name']}\">" . str_replace('-', ' ', trim(ucfirst($row['config_name']))) . "</label><br />
-								<input type=\"text\" name=\"data[{$row['config_name']}]\" value=\"" . stripslashes($row['config_value']) . "\" id=\"{$row['config_name']}\" /><br /><span class=\"form-text\">{$row['config_explain']}</span>
-							</p>";
+								<input class='form-control' type=\"text\" name=\"data[{$row['config_name']}]\" value=\"" . stripslashes($row['config_value']) . "\" id=\"{$row['config_name']}\" /><br /><span class=\"form-text\">{$row['config_explain']}</span>
+							</div>";
 		}
 
 		include('options.php');
