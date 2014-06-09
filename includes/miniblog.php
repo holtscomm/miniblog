@@ -54,27 +54,16 @@ $miniblog_posts = "";
 
 if($result->num_rows > 0)
 {
-	while($posts = $result->fetch_assoc())
+	while($post = $result->fetch_assoc())
 	{
-		$post_category_name = get_category_name_for_id($posts['post_category'], $database);
-		$vars = array(
-			'$postid$' => $posts['post_id'],
-			'$posturl$' => ($config['use-modrewrite'] == 1) ? $posts['post_slug'] : $config['miniblog-filename'] . '?post=' . $posts['post_slug'],
-			'$posttitle$' => stripslashes($posts['post_title']),
-			'$postdate$' => date($config['date-format'], $posts['date']),
-			'$postcontent$' => stripslashes($posts['post_content']),
-			'$postcategoryname$' => $post_category_name
-		);
-
-		$template_vars = array_keys($vars);
-		$template_values = array_values($vars);
-
-		$output = file_get_contents(PATH . 'includes/template.html');
-		$output = str_replace($template_vars, $template_values, $output);
+		$output = fill_post_template($post, $database);
 
 		$miniblog_posts .= $output;
 	}
 }
+
+$featured_post_db_array = get_featured_post($database);
+$featured_post = $featured_post_db_array ? fill_post_template($featured_post_db_array, $database) : null;
 
 $single = $post != '';
 $category_link = $category_id != null ? "&category={$category_name}" : "";

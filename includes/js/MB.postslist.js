@@ -4,11 +4,12 @@
 var MB = (MB || {});
 
 MB.CONST.Posts = {
+    FEATURE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/feature.php",
     PUBLISH_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/publish.php",
     REMOVE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/remove.php"
 };
 
-function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, categoryMap) {
+function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, featured, categoryMap) {
     var self = this;
 
     self.postId = postId;
@@ -19,6 +20,7 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
     self.postCategoryName = categoryMap[postCategory];
     self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
     self.published = ko.observable(parseInt(published));
+    self.featured = ko.observable(parseInt(featured));
     // Convenience links
     self.postCategoryLink = ko.computed(function() {
         if(self.postCategoryId) {
@@ -38,7 +40,6 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
             return first + "&preview=y";
         }
     });
-    self.deleteLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/delete.php?postid=" + self.postId;
 }
 
 function PostListViewModel() {
@@ -49,6 +50,7 @@ function PostListViewModel() {
     self.categoryMap = ko.observableArray();
     self.categoriesMapped = ko.observable(false);
     self.postsLoaded = ko.observable(false);
+    self.featuredPost = ko.observable();
 
     self.initData = function() {
         $.getJSON("../adm/post/", function(allData) {
@@ -61,14 +63,15 @@ function PostListViewModel() {
                     item.post_category,
                     item.date,
                     item.published,
+                    item.featured,
                     self.categoryMap()
                 );
             });
             self.posts(mappedPosts);
-            
+
             self.postsLoaded(true);
         });
-    }
+    };
 
     self.getCategoryMappings = function() {
         $.getJSON("../adm/category/map.php", function(categories) {
@@ -81,18 +84,42 @@ function PostListViewModel() {
 
             self.initData();
         });
-    }
+    };
 
-    self.publishPost = function(post) {
-        var data = {
-            "postid": post.postId,
-            "published": post.published()
-        }
-        // Using $.post to do a POST request to the publishLink
-        $.post(MB.CONST.Posts.PUBLISH_LINK, data, function(returnedData) {
-            post.published(returnedData.published)
+    // Set the initial featured post
+    self.getFeaturedPost = function() {
+        $.getJSON(MB.CONST.Posts.FEATURE_LINK, function(post) {
+            // Should just be one post id
+            if(post.featured !== undefined) {
+                self.featuredPost(post.featured);
+            }
         });
     }
+
+    /**
+     * publishPost will "flip the bit" of the published status, so if it is published,
+     *     it will be unpublished, and vice versa.
+     */
+    self.publishPost = function(post) {
+        alert(ko.unwrap(post.published));
+        var data = {
+            "postid": post.postId,
+            "published": (post.published() ? 0 : 1)
+        }
+        $.post(MB.CONST.Posts.PUBLISH_LINK, data, function(returnedData) {
+            //post.published(returnedData.published);
+            self.featuredPost()
+        });
+    };
+
+    self.featurePost = function(post) {
+        var data = {
+            "postid": post.postId
+        }
+        $.post(MB.CONST.Posts.FEATURE_LINK, data, function(returnedData) {
+            post.featured(returnedData.featured);
+        });
+    };
 
     self.deletePost = function(post) {
         if(confirm("Are you sure you want to delete the post " + post.postTitle + "?")) {
@@ -103,7 +130,9 @@ function PostListViewModel() {
                 self.posts.remove(post);
             });
         }
-    }
+    };
 
     self.getCategoryMappings();
+
+    self.getFeaturedPost();
 }

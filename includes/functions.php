@@ -176,3 +176,52 @@ function create_category($category_name, $database)
 
     return $category_exists;
 }
+
+/**
+ * get_featured_post
+ *
+ * This function takes no parameters (besides a database connection) and returns an
+ *  associative array of the details about the featured post (including content).
+ */
+
+function get_featured_post($database)
+{
+	$sql = "SELECT * FROM `miniblog` WHERE `featured` = 1";
+
+	$result = mb_query($sql, $database);
+
+	$assoc_result = $result->fetch_assoc();
+
+	// Can't do this all in one step anymore, some PHP installations don't like it very much.
+	return $assoc_result;
+}
+
+/**
+ * fill_post_template
+ *
+ * This function takes the associative array of a post and converts it into the templated
+ *  HTML for that post.
+ * Parameters (along with database connection):
+ *  $post - associative array of post data
+ */
+function fill_post_template($post, $database)
+{
+	$config = mb_config($database);
+	$post_category_name = get_category_name_for_id($post['post_category'], $database);
+	$vars = array(
+		'$postid$' => $post['post_id'],
+		'$posturl$' => ($config['use-modrewrite'] == 1) ? $post['post_slug'] : $config['miniblog-filename'] . '?post=' . $post['post_slug'],
+		'$posttitle$' => stripslashes($post['post_title']),
+		'$postdate$' => date($config['date-format'], $post['date']),
+		'$postcontent$' => stripslashes($post['post_content']),
+		'$postcategoryname$' => $post_category_name
+	);
+
+	$template_vars = array_keys($vars);
+	$template_values = array_values($vars);
+
+	$output = file_get_contents(PATH . 'includes/template.html');
+	$output = str_replace($template_vars, $template_values, $output);
+
+	return $output;
+}
