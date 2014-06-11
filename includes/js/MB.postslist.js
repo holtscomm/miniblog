@@ -9,7 +9,7 @@ MB.CONST.Posts = {
     REMOVE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/remove.php"
 };
 
-function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, featured, categoryMap) {
+function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, categoryMap) {
     var self = this;
 
     self.postId = postId;
@@ -20,7 +20,6 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
     self.postCategoryName = categoryMap[postCategory];
     self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
     self.published = ko.observable(parseInt(published));
-    self.featured = ko.observable(parseInt(featured));
     // Convenience links
     self.postCategoryLink = ko.computed(function() {
         if(self.postCategoryId) {
@@ -50,7 +49,7 @@ function PostListViewModel() {
     self.categoryMap = ko.observableArray();
     self.categoriesMapped = ko.observable(false);
     self.postsLoaded = ko.observable(false);
-    self.featuredPost = ko.observable();
+    self.featuredPostId = ko.observable();
 
     self.initData = function() {
         $.getJSON("../adm/post/", function(allData) {
@@ -91,33 +90,22 @@ function PostListViewModel() {
         $.getJSON(MB.CONST.Posts.FEATURE_LINK, function(post) {
             // Should just be one post id
             if(post.featured !== undefined) {
-                self.featuredPost(post.featured);
+                self.featuredPostId(post.featured);
             }
         });
-    }
+    };
 
     /**
      * publishPost will "flip the bit" of the published status, so if it is published,
      *     it will be unpublished, and vice versa.
      */
     self.publishPost = function(post) {
-        alert(ko.unwrap(post.published));
         var data = {
             "postid": post.postId,
             "published": (post.published() ? 0 : 1)
-        }
+        };
         $.post(MB.CONST.Posts.PUBLISH_LINK, data, function(returnedData) {
-            //post.published(returnedData.published);
-            self.featuredPost()
-        });
-    };
-
-    self.featurePost = function(post) {
-        var data = {
-            "postid": post.postId
-        }
-        $.post(MB.CONST.Posts.FEATURE_LINK, data, function(returnedData) {
-            post.featured(returnedData.featured);
+            post.published(returnedData.published);
         });
     };
 
@@ -135,4 +123,13 @@ function PostListViewModel() {
     self.getCategoryMappings();
 
     self.getFeaturedPost();
+
+    self.featuredPostId.subscribe(function(newValue) {
+        var data = {
+            "postid": newValue
+        }
+        $.post(MB.CONST.Posts.FEATURE_LINK, data, function(returnedData) {
+            self.featuredPostId(returnedData.featured);
+        });
+    });
 }

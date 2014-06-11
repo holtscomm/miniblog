@@ -183,10 +183,10 @@ function create_category($category_name, $database)
  * This function takes no parameters (besides a database connection) and returns an
  *  associative array of the details about the featured post (including content).
  */
-
 function get_featured_post($database)
 {
-	$sql = "SELECT * FROM `miniblog` WHERE `featured` = 1";
+	// Don't show a non-published post, ever!
+	$sql = "SELECT * FROM `miniblog` WHERE `featured` = 1 AND `published` = 1";
 
 	$result = mb_query($sql, $database);
 

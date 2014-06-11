@@ -19,7 +19,7 @@ include('includes/miniblog.php');
 	    <h1>Miniblog Default</h1>
 	</div>
 	<?php
-	if($featured_post)
+	if($featured_post && !$single)
 	 {
 		?>
 	<div class="jumbotron">
