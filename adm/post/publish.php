@@ -23,7 +23,6 @@ if($post_id)
 {
     // Flip dat bit
     $new_publish = $published ? 0 : 1;
-    $message = "new publish will be: $new_publish, published is $published";
     $sql = "UPDATE `miniblog` SET `published` = {$new_publish} WHERE `post_id` = $post_id";
     $result = mb_query($sql, $database);
 
@@ -31,8 +30,7 @@ if($post_id)
     if($result)
     {
         $return = array(
-            "published" => $new_publish,
-            "message" => $message
+            "published" => $new_publish
         );
         echo json_encode($return);
     }
