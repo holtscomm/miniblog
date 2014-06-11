@@ -1,8 +1,4 @@
 <?php
-if(!defined('IN_BLOG'))
-{
-	exit;
-}
 
 if(strstr($_SERVER['SERVER_NAME'], "localhost"))
 {

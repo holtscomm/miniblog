@@ -1,8 +1,4 @@
 <?php
-if(!defined('IN_BLOG'))
-{
-	exit;
-}
 
 function mb_connect($sqlconfig)
 {
@@ -175,4 +171,26 @@ function create_category($category_name, $database)
     }
 
     return $category_exists;
+}
+
+
+function get_user_from_db($username, $password, $database)
+{
+	$user_object = false;
+	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+	$sql = "SELECT * FROM `miniblog_user` WHERE `username` = '{$username}' AND `password` = '{$hashed_password}'";
+	$id = $dbusername = $dbpassword = null;
+
+	$result = mb_query($sql, $database);
+
+	if($result)
+	{
+		$user_info = $result->fetch_assoc();
+		$dbusername = $user_info['username'];
+		$dbpassword = $user_info['password'];
+		$id = $user_info['user_id'];
+		$user_object = new User($dbusername, $dbpassword, $id);
+	}
+
+	return $user_object;
 }
