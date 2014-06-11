@@ -22,9 +22,4 @@ class User
     {
         return $this->userid;
     }
-
-    function is_user()
-    {
-        return $this->account_type == USER;
-    }
 }
