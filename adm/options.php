@@ -31,8 +31,6 @@ if(isset($_POST['miniblog_PostBack']))
 		{
 			$response_text = 'Options updated';
 		}
-
-
 }
 
 $sql = "SELECT * FROM `miniblog_config` WHERE `config_name` <> 'password'";
