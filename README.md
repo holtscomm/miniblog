@@ -28,7 +28,7 @@ The default password for the admin area is `password`. It is recommended that yo
 
 ### Modify the post template to your needs
 
-The templating "engine" exposes some variables that you can use in your templates. Here is the default template, which uses all of the available variables:
+The template "engine" exposes some variables that you can use in your templates. Here is the default template, which uses all of the available variables:
 
 ```html
 <div class="post" id="post-$postid$">
@@ -72,3 +72,4 @@ Including that code will expose a few variables for you to use, and that can be 
 - `$miniblog_next` - String - Will contain the link to the list of posts that are later than the ones currently displayed
 - `$config['miniblog-filename']` - The name of the file being used for the base of the posts. Defined in the admin area under Options
 - `$category_link` - Relative category URL to the current page, e.g. `?category=news`
+- `$featured_post` - This one is kind of special. It's a separate post that you have selected on the list/index page to be the "featured" post. It's like the `$single` variable except it will always be available to you.
