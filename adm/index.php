@@ -14,11 +14,9 @@ if(!$database)
 switch($mode)
 {
 	default:
-
-	case 'list':
-		echo "<p>Please use <a href='list.php'>list.php</a> instead.</p>";
+		header('Location: list.php');
+		exit;
 	break;
-
 
     /**
     * Edit post "view"
@@ -195,35 +193,6 @@ switch($mode)
 
 		include('edit.php');
 
-	break;
-
-    /**
-    * Delete post "view"
-    */
-	case 'delete':
-
-		$id = $database->real_escape_string($_GET['id']);
-
-		$post_sql = "SELECT * FROM `miniblog` WHERE `post_id` = '{$id}'";
-		$result = mb_query($post_sql, $database);
-
-		if($result->num_rows == 1)
-		{
-		    $sql = "DELETE FROM `miniblog` WHERE `post_id` = '{$id}'";
-			$result = mb_query($sql, $database);
-			if($result)
-			{
-				header("Location: list.php");
-			}
-			else
-			{
-				die($database->error);
-			}
-		}
-		else
-		{
-			header("Location: list.php");
-		}
 	break;
 
 	/**
