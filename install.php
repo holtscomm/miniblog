@@ -138,7 +138,7 @@ a {
 			exit;
 		}
 
-		echo 'Creating tables <em>miniblog</em>, <em>miniblog_config</em>, <em>miniblog_category</em>...';
+		echo 'Creating tables <em>miniblog</em>, <em>miniblog_config</em>, <em>miniblog_category</em>, <em>miniblog_user</em>...';
 
 		$sql = "CREATE TABLE `miniblog` (
 				  `post_id` int(20) NOT NULL auto_increment,
@@ -169,7 +169,16 @@ a {
 
 		$result3 = mb_query($sql, $database);
 
-		if(!$result || !$result2 || !$result3)
+		$sql = "CREATE TABLE `miniblog_user` (
+				`user_id` int(3) NOT NULL auto_increment,
+				`username` varchar(100) NOT NULL,
+				`password` varchar(500) NOT NULL,
+				PRIMARY KEY (`user_id`)
+				)";
+
+		$result4 = mb_query($sql, $database);
+
+		if(!$result || !$result2 || !$result3 || !$result4)
 		{
 			echo $fail;
 			echo(sprintf($sql_error, $database->error));
@@ -194,7 +203,12 @@ a {
 
 			$result2 = mb_query($sql, $database);
 
-			if(!$result || !$result2)
+			$sql = 'INSERT INTO `miniblog_user` (`username`, `password`) VALUES
+					("admin", "$2y$10$DTfDCO1a9wX1XhwWWFzIfOe9YyShBBLD0yMtQfDCImOL4BPSUBUsG")';
+
+			$result3 = mb_query($sql, $database);
+
+			if(!$result || !$result2 || !$result3)
 			{
 					echo $fail;
 					echo(sprintf($sql_error, $database->error));
@@ -216,7 +230,7 @@ a {
 		?>
 			<p>Installation is now complete!<br /><br />
 				View your miniblog here: <a href="index.php">miniblog</a><br /><br />
-				Login to your miniblog admin panel, with password: <strong>password</strong> here: <a href="adm/admin.php">admin</a><br /><br /></p>
+				Login to your miniblog admin panel, with password: <strong>password</strong> here: <a href="adm/login.php">admin</a><br /><br /></p>
 				<p><strong>Installation complete!</strong></p>
 				<p><strong>Please delete this file (install.php) from your server</strong></p>
 			</code>

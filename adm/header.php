@@ -1,3 +1,29 @@
+<?php
+session_start();
+require_once('class.user.php');
+$user = null;
+if(isset($_SESSION["user"]))
+{
+    $user = unserialize($_SESSION["user"]);
+}
+else
+{
+    header("Location: login.php");
+    exit;
+}
+
+include('../includes/config.php');
+include('../includes/functions.php');
+
+$database = mb_connect($sqlconfig);
+unset($sqlconfig);
+
+if(!$database)
+{
+    die("Could not connect to MySQL database, check the settings in config.php");
+}
+$config = mb_config($database);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,16 +65,16 @@ tinymce.init({
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="list.php">Miniblog Admin</a>
+          <a class="navbar-brand" href="index.php">Miniblog Admin</a>
         </div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="list.php">Posts</a></li>
-        <li><a href="admin.php?mode=add">New post</a></li>
-        <li><a href="admin.php?mode=options">Options</a></li>
-        <li><a href="admin.php?mode=password">Change password</a></li>
-        <li><a href="admin.php?mode=logout" onclick="return confirm_dialog('admin.php?mode=logout', 'Are you sure you want to logout?');">Logout</a></li>
+        <li><a href="index.php">Posts</a></li>
+        <li><a href="edit.php?mode=add">New post</a></li>
+        <li><a href="options.php">Options</a></li>
+        <li><a href="password.php">Change password</a></li>
+        <li><a href="login.php?logout=true">Logout</a></li>
       </ul>
     </div><!-- /.navbar-collapse -->
 

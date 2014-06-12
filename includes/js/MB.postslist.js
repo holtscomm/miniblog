@@ -28,7 +28,7 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
             return undefined;
         }
     });
-    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "admin.php?mode=edit&id=" + postId;
+    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "edit.php?mode=edit&id=" + postId;
     self.viewLink = ko.computed(function() {
         var first = MB.CONST.SiteSettings.DOCUMENT_ROOT + "?post=" + self.postSlug;
         if(self.published()) {
@@ -65,7 +65,7 @@ function PostListViewModel() {
                 );
             });
             self.posts(mappedPosts);
-            
+
             self.postsLoaded(true);
         });
     }
