@@ -14,7 +14,7 @@
 <nav class="navbar navbar-default" role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header">
-		<a class="navbar-brand" href="list.php">Miniblog Admin</a>
+		<a class="navbar-brand" href="index.php">Miniblog Admin</a>
 		</div>
 	</div><!-- /.container-fluid -->
 </nav>

@@ -29,7 +29,7 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, date,
             return undefined;
         }
     });
-    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "admin.php?mode=edit&id=" + postId;
+    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "edit.php?mode=edit&id=" + postId;
     self.viewLink = ko.computed(function() {
         var first = MB.CONST.SiteSettings.DOCUMENT_ROOT + "?post=" + self.postSlug;
         if(self.published()) {
@@ -86,7 +86,7 @@ function PostListViewModel() {
     };
 
     // Set the initial featured post
-    self.getFeaturedPost = function() {
+    self.setInitialFeaturedPost = function() {
         $.getJSON(MB.CONST.Posts.FEATURE_LINK, function(post) {
             // Should just be one post id
             if(post.featured !== undefined) {
@@ -101,8 +101,8 @@ function PostListViewModel() {
      */
     self.publishPost = function(post) {
         var data = {
-            "postid": post.postId,
-            "published": (post.published() ? 0 : 1)
+            postid: post.postId,
+            published: (post.published() ? 0 : 1)
         };
         $.post(MB.CONST.Posts.PUBLISH_LINK, data, function(returnedData) {
             post.published(returnedData.published);
@@ -112,7 +112,7 @@ function PostListViewModel() {
     self.deletePost = function(post) {
         if(confirm("Are you sure you want to delete the post " + post.postTitle + "?")) {
             var data = {
-                "postid": post.postId
+                postid: post.postId
             };
             $.post(MB.CONST.Posts.REMOVE_LINK, data, function(returnedData) {
                 self.posts.remove(post);
@@ -122,11 +122,11 @@ function PostListViewModel() {
 
     self.getCategoryMappings();
 
-    self.getFeaturedPost();
+    self.setInitialFeaturedPost();
 
     self.featuredPostId.subscribe(function(newValue) {
         var data = {
-            "postid": newValue
+            postid: newValue
         }
         $.post(MB.CONST.Posts.FEATURE_LINK, data, function(returnedData) {
             self.featuredPostId(returnedData.featured);
