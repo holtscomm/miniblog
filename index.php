@@ -18,6 +18,16 @@ include('includes/miniblog.php');
 	<div class="page-header">
 	    <h1>Miniblog Default</h1>
 	</div>
+	<?php
+	if($featured_post && !$single)
+	 {
+		?>
+	<div class="jumbotron">
+		<?= $featured_post ?>
+	</div>
+	<?php
+     }
+	?>
 	<div>
     	<?= $miniblog_posts ?>
 	</div>

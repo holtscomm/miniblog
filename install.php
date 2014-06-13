@@ -148,6 +148,7 @@ a {
 				  `post_category` int(3) NULL default NULL,
 				  `date` int(20) NOT NULL default '0',
 				  `published` int(1) NOT NULL default '0',
+				  `featured` int(1) NOT NULL default '0',
 				  PRIMARY KEY  (`post_id`)
 				)";
 
