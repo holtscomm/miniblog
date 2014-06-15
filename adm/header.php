@@ -38,6 +38,7 @@ $config = mb_config($database);
 <!-- Latest compiled and minified JavaScript -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="../includes/js/MB.js"></script>
+<script type="text/javascript" src="../includes/js/MB.postmodel.js"></script>
 <script type="text/javascript" src="../includes/js/MB.postslist.js"></script>
 <script type="text/javascript">
 tinymce.init({

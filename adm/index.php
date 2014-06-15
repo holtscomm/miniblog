@@ -20,7 +20,7 @@ include('header.php');
                 (<a data-bind="attr: { href: editLink }">edit</a>)
             </td>
             <td>
-                <a data-bind="attr: { href: postCategoryLink }"><span data-bind="text: postCategoryName"></span></a>
+                <a data-bind="attr: { href: postCategoryLink }, text: postCategoryName"></a>
                 <span data-bind="ifnot: postCategoryId">&lt;none&gt;</span>
             </td>
             <td><input type="checkbox" data-bind="checked: published, click: $parent.publishPost"/></td>
@@ -31,7 +31,7 @@ include('header.php');
     </tbody>
 </table>
 
-<a href="admin.php?mode=add"><button class="btn btn-success">Add a new post</button></a>
+<a href="edit.php?mode=add"><button class="btn btn-success">Add a new post</button></a>
 
 <div data-bind="ifnot: postsLoaded" class="text-center">
     <img src="../includes/spinnerLarge.gif" title="Loading posts" />

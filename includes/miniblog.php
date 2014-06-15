@@ -17,10 +17,11 @@ if(!$database)
 
 $config = mb_config($database);
 
-$post	= (string) $database->real_escape_string($_GET['post']);
-$page	= (int) $database->real_escape_string(intval($_GET['page']));
-$ppp	= (int) intval($config['posts-per-page']);
-$from	= (int) intval($ppp * $page);
+$post = (string) optional_param($_GET, 'post', false);
+// $post = (string) $database->real_escape_string($_GET['post']);
+$page = (int) $database->real_escape_string(intval($_GET['page']));
+$ppp = (int) intval($config['posts-per-page']);
+$from = (int) intval($ppp * $page);
 $category_name = (string) $database->real_escape_string($_GET['category']);
 $category_id = $category_name != "" ? get_category_id($category_name, $database) : null;
 $preview = (string) $database->real_escape_string($_GET['preview']);
@@ -34,7 +35,7 @@ if($category_id != null)
 {
 	$sql .= " AND `post_category` = {$category_id}";
 }
-if($post != '')
+if($post)
 {
 	$sql .= " AND `post_slug` = '{$post}'";
 }
@@ -50,22 +51,27 @@ $total_result = mb_query($total_post_sql, $database);
 $total_array = $total_result->fetch_array();
 $total = $total_array[0];
 
-$miniblog_posts = "";
+$miniblog_posts = array();
+
 
 if($result->num_rows > 0)
 {
-	while($post = $result->fetch_assoc())
+	while($post_each = $result->fetch_assoc())
 	{
-		$output = fill_post_template($post, $database);
+		// $output = fill_post_template($post, $database);
 
-		$miniblog_posts .= $output;
+		// $miniblog_posts .= $output;
+
+		// $miniblog_posts[] = fill_post_template($post, $database);
+		$post_each["post_category_name"] = $category_name;
+		$miniblog_posts[] = $post_each;
 	}
 }
 
-$featured_post_db_array = get_featured_post($database);
-$featured_post = $featured_post_db_array ? fill_post_template($featured_post_db_array, $database) : null;
+$featured_post = get_featured_post($database);
 
-$single = $post != '';
+$single = $post;
+
 $category_link = $category_id != null ? "&category={$category_name}" : "";
 if($total > ($from + $ppp))
 {

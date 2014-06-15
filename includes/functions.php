@@ -204,22 +204,18 @@ function fill_post_template($post, $database)
 {
 	$config = mb_config($database);
 	$post_category_name = get_category_name_for_id($post['post_category'], $database);
+
 	$vars = array(
-		'$postid$' => $post['post_id'],
-		'$posturl$' => ($config['use-modrewrite'] == 1) ? $post['post_slug'] : $config['miniblog-filename'] . '?post=' . $post['post_slug'],
-		'$posttitle$' => stripslashes($post['post_title']),
-		'$postdate$' => date($config['date-format'], $post['date']),
-		'$postcontent$' => stripslashes($post['post_content']),
-		'$postcategoryname$' => $post_category_name
+		'postId' => $post['post_id'],
+		'postUrl' => ($config['use-modrewrite'] == 1) ? $post['post_slug'] : $config['miniblog-filename'] . '?post=' . $post['post_slug'],
+		'postTitle' => stripslashes($post['post_title']),
+		'postDate' => date($config['date-format'], $post['date']),
+		'postContent' => stripslashes($post['post_content']),
+		'postCategoryName' => $post_category_name,
+        'postCategoryLink' => $post['post_category'] != null ? "?category={$post_category_name}" : ""
 	);
 
-	$template_vars = array_keys($vars);
-	$template_values = array_values($vars);
-
-	$output = file_get_contents(PATH . 'includes/template.html');
-	$output = str_replace($template_vars, $template_values, $output);
-
-	return $output;
+	return $vars;
 }
 
 function get_user_from_db($username, $password, $database)
@@ -241,4 +237,24 @@ function get_user_from_db($username, $password, $database)
 	}
 
 	return $user_object;
+}
+
+/**
+ * optional_param
+ *
+ * Params:
+ *   $array - an array to get a value from
+ *   $expected_index - an index that you want to retrieve the value for
+ *   $default - the value you want if the index doesn't exist
+ */
+function optional_param($array, $expected_index, $default)
+{
+    if(isset($array[$expected_index]))
+    {
+        return $array[$expected_index];
+    }
+    else
+    {
+        return $default;
+    }
 }
