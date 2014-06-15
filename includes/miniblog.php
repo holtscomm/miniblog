@@ -58,11 +58,6 @@ if($result->num_rows > 0)
 {
 	while($post_each = $result->fetch_assoc())
 	{
-		// $output = fill_post_template($post, $database);
-
-		// $miniblog_posts .= $output;
-
-		// $miniblog_posts[] = fill_post_template($post, $database);
 		$post_each["post_category_name"] = $category_name;
 		$miniblog_posts[] = $post_each;
 	}
