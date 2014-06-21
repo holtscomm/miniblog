@@ -15,7 +15,7 @@ if(!$database)
 	die("Could not connect to MySQL database, check the settings in config.php");
 }
 
-$config = mb_config($database);
+$config = get_options($database);
 
 $post = (string) get_value($_GET, 'post', false);
 // $post = (string) $database->real_escape_string($_GET['post']);

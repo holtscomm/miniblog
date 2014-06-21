@@ -1,5 +1,18 @@
 <?php
+/**
+ * Functions for miniblog.
+ *  The majority of these functions require a $database arg, which is the return value
+ *  from mb_connect().
+ */
 
+/**
+ * mb_connect
+ *
+ * Connect to the database using the configs from config.php
+ *
+ * Args:
+ *    argA
+ */
 function mb_connect($sqlconfig)
 {
     $database = new mysqli($sqlconfig['host'], $sqlconfig['username'], $sqlconfig['password']);
@@ -7,6 +20,15 @@ function mb_connect($sqlconfig)
     return $database;
 }
 
+/**
+ * mb_query
+ *
+ * Submit a query to the database and return the result.
+ *    Read http://www.php.net//manual/en/class.mysqli-result.php for more info
+ *
+ * Args:
+ *    $query - an SQL string to execute on the database
+ */
 function mb_query($query, $database)
 {
     if(!$database)
@@ -16,23 +38,19 @@ function mb_query($query, $database)
     return $database->query($query);
 }
 
-function mb_config($database)
+/**
+ * mb_slug
+ *
+ * Finds a unique slug for a string passed in
+ *
+ * Args:
+ *    $post_title - will be used to make a slug, spaces replaced by dashes, etc.
+ */
+function mb_slug($post_title, $database)
 {
-    $result = mb_query("SELECT * FROM `miniblog_config`", $database);
-    $config = array();
-    while($row = $result->fetch_assoc())
-    {
-        $config[$row['config_name']] = $row['config_value'];
-    }
-    $result->close();
-    return $config;
-}
-
-function mb_slug($string, $database)
-{
-    $string = strtolower(trim($string));
-    $string = str_replace(' ', '-', $string);
-    $slug = preg_replace('/[^a-z0-9-]/', '', $string);
+    $post_title = strtolower(trim($post_title));
+    $post_title = str_replace(' ', '-', $post_title);
+    $slug = preg_replace('/[^a-z0-9-]/', '', $post_title);
 
     $i = 0;
     if(mb_slug_exists($slug, $database))
@@ -49,6 +67,14 @@ function mb_slug($string, $database)
     return $slug;
 }
 
+/**
+ * mb_slug_exists
+ *
+ * Check if a slug already exists in the database
+ *
+ * Args:
+ *    $slug - the slug to check against in the database
+ */
 function mb_slug_exists($slug, $database)
 {
     $slug = $database->real_escape_string($slug);
@@ -69,13 +95,23 @@ function mb_slug_exists($slug, $database)
     return $slug_exists;
 }
 
+/**
+ * generate_option_list
+ *
+ * Generates HTML for a select input
+ *
+ * Args:
+ *    $list_items - The items in the select box
+ *    $selected - the value of the item that is selected
+ */
 function generate_option_list($list_items = array(), $selected)
 {
     $html = "";
     foreach($list_items as $value => $label)
     {
 
-        $html .= ($selected == $value) ? "<option value=\"{$value}\" selected=\"selected\">{$label}</option>" : "<option value=\"{$value}\">{$label}</option>";
+        $html .= ($selected == $value) ? "<option value=\"{$value}\" selected=\"selected\">{$label}</option>" :
+                                         "<option value=\"{$value}\">{$label}</option>";
 
     }
     return $html;
@@ -96,6 +132,9 @@ function generate_option_list($list_items = array(), $selected)
  *         "name" => "hamburgers"
  *     }
  * }
+ *
+ * Args
+ *    $category_ids - array of category ids
  */
 function get_category_names_for_ids($category_ids, $database)
 {
@@ -112,6 +151,14 @@ function get_category_names_for_ids($category_ids, $database)
     return $category_names;
 }
 
+/**
+ * get_category_name_for_id
+ *
+ * Returns a category name for an id
+ *
+ * Args:
+ *    $category_id - category id in the database
+ */
 function get_category_name_for_id($category_id, $database)
 {
     $category_name = null;
@@ -129,8 +176,11 @@ function get_category_name_for_id($category_id, $database)
 /**
  * category_exists
  *
- * This function takes a category name and will return the category id if it exists,
+ * Takes a category name and will return the category id if it exists,
  * or false if it does not.
+ *
+ * Args
+ *    $category_name - name of the category
  */
 function get_category_id($category_name, $database)
 {
@@ -156,6 +206,9 @@ function get_category_id($category_name, $database)
  *
  * This function takes a category name and will try to create it in the database.
  * This function will recursively call itself until it succeeds.
+ *
+ * Args
+ *    $category_name - name of the category to be created
  */
 function create_category($category_name, $database)
 {
@@ -176,8 +229,12 @@ function create_category($category_name, $database)
 /**
  * get_featured_post
  *
- * This function takes no parameters (besides a database connection) and returns an
- *  associative array of the details about the featured post (including content).
+ * This function takes no parameters and returns an associative array of the details
+ * about the featured post (including content). If $id_only is true, only the post_id
+ * will be returned.
+ *
+ * Args
+ *    $id_only - Whether this function should return the post_id or the full post item
  */
 function get_featured_post($database, $id_only=false)
 {
@@ -196,8 +253,13 @@ function get_featured_post($database, $id_only=false)
 }
 
 /**
+ * set_featured_post
  *
+ * Takes a post id and sets the featured value on it to 1 in the database. Sets
+ * all other posts featured value to be 0.
  *
+ * Args:
+ *    $post_id - post to set the featured value on
  */
 function set_featured_post($post_id, $database)
 {
@@ -232,13 +294,14 @@ function set_featured_post($post_id, $database)
  * fill_post_template
  *
  * This function takes the associative array of a post and converts it into the templated
- *  HTML for that post.
- * Parameters (along with database connection):
+ * HTML for that post.
+ *
+ * Args:
  *  $post - associative array of post data
  */
 function fill_post_template($post, $database)
 {
-    $config = mb_config($database);
+    $config = get_options($database);
     $post_category_name = get_category_name_for_id($post['post_category'], $database);
 
     $vars = array(
@@ -254,6 +317,16 @@ function fill_post_template($post, $database)
     return $vars;
 }
 
+/**
+ * get_user_from_db
+ *
+ * Takes in a username and password and attempts to get a user from the database.
+ * If it exists a new User object will be returned, otherwise false (so the login failed)
+ *
+ * Args:
+ *    $username - Username of the user attempting login
+ *    $password - Password associated with the username passed in
+ */
 function get_user_from_db($username, $password, $database)
 {
     $user_object = false;
@@ -278,7 +351,10 @@ function get_user_from_db($username, $password, $database)
 /**
  * get_value
  *
- * Params:
+ * Takes an array, an index, and a default value to return if that index does not exist.
+ * If the index exists in the array, the value at that index will be returned. Else, the default.
+ *
+ * Args:
  *   $array - an array to get a value from
  *   $expected_index - an index that you want to retrieve the value for
  *   $default - the value you want if the index doesn't exist
@@ -295,13 +371,21 @@ function get_value($array, $expected_index, $default)
     }
 }
 
-
-function get_options($config_name, $database)
+/**
+ * get_options
+ *
+ * Returns an indexed array of config names to config values for the miniblog installation.
+ *
+ * Args:
+ *    $config_name - if you want just one config, pass in the config name from the database
+ */
+function get_options($database, $config_name=false)
 {
     $sql = "SELECT * FROM `miniblog_config`";
 
     if($config_name)
     {
+        $config_name = $database->real_escape_string($config_name);
         $sql .= " WHERE `config_name` = '{$config_name}'";
     }
 
@@ -310,12 +394,22 @@ function get_options($config_name, $database)
     $result_array = array();
     while($row = $result->fetch_assoc())
     {
-        $result_array[] = $row;
+        $result_array[$row["config_name"]] = $row["config_value"];
     }
 
     return $result_array;
 }
 
+/**
+ * get_posts
+ *
+ * Get posts by id or get all posts. Pass a limit or an order by column as well.
+ *
+ * Args:
+ *    $post_id - The id of the post to retrieve, or null to get all posts
+ *    $limit - Limit on how many posts to retrieve
+ *    $orderby - Column to order by, e.g. date desc
+ */
 function get_posts($post_id, $limit=1000, $orderby="date", $database)
 {
     if(!$post_id instanceof int)
@@ -356,6 +450,15 @@ function get_posts($post_id, $limit=1000, $orderby="date", $database)
     return $return;
 }
 
+/**
+ * publish_post
+ *
+ * Publish a post by post_id
+ *
+ * Args:
+ *    $post_id - Id of the post to publish
+ *    $published - 1 if the post is currently published, 0 if it is not
+ */
 function publish_post($post_id, $published, $database)
 {
     $return = false;
@@ -374,6 +477,14 @@ function publish_post($post_id, $published, $database)
     return $return;
 }
 
+/**
+ * delete_post
+ *
+ * Delete a post by id
+ *
+ * Args:
+ *    $post_id - Id of the post to delete
+ */
 function delete_post($post_id, $database)
 {
     $post_id = $database->real_escape_string($post_id);

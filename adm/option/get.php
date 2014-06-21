@@ -9,10 +9,7 @@ unset($sqlconfig);
 $config_name = get_value($_REQUEST, 'configName', false);
 $config_name = $database->real_escape_string($config_name);
 
-if($config_name)
-{
-    $options = get_options($config_name, $database);
+$options = get_options($database, $config_name);
 
-    header('Content-Type: application/json');
-    echo json_encode($options);
-}
+header('Content-Type: application/json');
+echo json_encode($options);
