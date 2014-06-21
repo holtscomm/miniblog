@@ -3,12 +3,6 @@
  */
 var MB = (MB || {});
 
-MB.CONST.Posts = {
-    FEATURE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/feature.php",
-    PUBLISH_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/publish.php",
-    REMOVE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/remove.php"
-};
-
 function PostViewModel(postData, featuredPostData) {
     var self = this;
     self.postData = postData;

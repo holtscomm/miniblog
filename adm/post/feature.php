@@ -1,7 +1,7 @@
 <?php
-define('IN_BLOG', true);
-define('IN_ADMIN', true);
-// define('PATH', '');
+// API for getting or setting the featured post
+//  Pass in postId as a GET or POST param to set it as the featured post.
+//  Don't pass in postId to get the currently featured post.
 
 include('../../includes/config.php');
 include('../../includes/functions.php');
@@ -9,51 +9,35 @@ include('../../includes/functions.php');
 $database = mb_connect($sqlconfig);
 unset($sqlconfig);
 
-if(isset($_REQUEST['postid']))
-{
-    $post_id = $_REQUEST['postid'];
-}
-else if(!isset($_REQUEST['postid']))
-{
-    $post_id = null;
-}
-else
-{
-    die("postid is required for this endpoint");
-}
+$post_id = get_value($_REQUEST, 'postId', false);
+$id_only = get_value($_REQUEST, 'idOnly', false);
 
 header('Content-Type: application/json');
 // Set featured post
 if($post_id)
 {
-    // Set every other post's featured flag to false
-    $sql = "UPDATE `miniblog` SET `featured` = 0 WHERE `post_id` != $post_id";
-    $result1 = mb_query($sql, $database);
-
-    // Then set the desired post to be the featured one!
-    $sql = "UPDATE `miniblog` SET `featured` = 1 WHERE `post_id` = $post_id";
-    $result2 = mb_query($sql, $database);
-
-    if($result1 && $result2)
+    $featured = set_featured_post($post_id, $database);
+    if($featured)
     {
-        $return = array(
-            "featured" => $post_id
-        );
-        echo json_encode($return);
+        echo json_encode(array("featured" => (int)$post_id));
     }
 }
 // Get featured post
 else if($post_id == null)
 {
-    $sql = "SELECT `post_id` FROM `miniblog` WHERE `featured` = 1";
-    $result = mb_query($sql, $database);
-
-    if($result)
+    if($id_only)
     {
-        $post_id = $result->fetch_assoc();
-        $return = array(
-            "featured" => (int) $post_id['post_id']
-        );
-        echo json_encode($return);
+        $featured_post_id = get_featured_post($database, $id_only);
+        echo json_encode(array("featured" => (int)$featured_post_id));
     }
+    else
+    {
+        $featured_post = get_featured_post($database);
+        echo json_encode(array("featured" => $featured_post));
+    }
+}
+else
+{
+    http_response_code(400);
+    echo json_encode(array("message" => "postId was " . $post_id));
 }

@@ -1,10 +1,10 @@
 /**
  * Knockout model for posts
  */
-function PostModel(postId, postSlug, postTitle, postContent, postCategory, postCategoryName, date, published) {
+function PostModel(postId, postSlug, postTitle, postContent, postCategory, postCategoryName, date, published, featured) {
     var self = this;
 
-    self.postId = postId;
+    self.postId = parseInt(postId);
     self.postSlug = postSlug;
     self.postUrl = MB.CONST.SiteSettings.DOCUMENT_ROOT + '?post=' + self.postSlug;
     self.postTitle = postTitle;
@@ -12,7 +12,8 @@ function PostModel(postId, postSlug, postTitle, postContent, postCategory, postC
     self.postCategoryId = postCategory;
     self.postCategoryName = postCategoryName;
     self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
-    self.published = ko.observable(parseInt(published));
+    self.published = ko.observable(published == 1);
+    self.featured = ko.observable(featured == 1);
     // Convenience links
     self.postCategoryLink = ko.computed(function() {
         if(self.postCategoryId) {
