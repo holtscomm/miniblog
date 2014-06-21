@@ -42,7 +42,7 @@ include('includes/miniblog.php');
 	<?php
 	}
 	?>
-	<div class="navigation">
+	<div class="col-md-8">
 		<?php
 		// If not viewing a single post, show some older/newer post links
 		if(!$single)

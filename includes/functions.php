@@ -3,8 +3,8 @@
 function mb_connect($sqlconfig)
 {
     $database = new mysqli($sqlconfig['host'], $sqlconfig['username'], $sqlconfig['password']);
-	$database->select_db($sqlconfig['dbname']);
-	return $database;
+    $database->select_db($sqlconfig['dbname']);
+    return $database;
 }
 
 function mb_query($query, $database)
@@ -18,60 +18,60 @@ function mb_query($query, $database)
 
 function mb_config($database)
 {
-	$result = mb_query("SELECT * FROM `miniblog_config`", $database);
-	$config = array();
-	while($row = $result->fetch_assoc())
-	{
-		$config[$row['config_name']] = $row['config_value'];
-	}
-	$result->close();
-	return $config;
+    $result = mb_query("SELECT * FROM `miniblog_config`", $database);
+    $config = array();
+    while($row = $result->fetch_assoc())
+    {
+        $config[$row['config_name']] = $row['config_value'];
+    }
+    $result->close();
+    return $config;
 }
 
 function mb_slug($string, $database)
 {
-	$string = strtolower(trim($string));
-	$string = str_replace(' ', '-', $string);
-	$slug = preg_replace('/[^a-z0-9-]/', '', $string);
+    $string = strtolower(trim($string));
+    $string = str_replace(' ', '-', $string);
+    $slug = preg_replace('/[^a-z0-9-]/', '', $string);
 
-	$i = 0;
-	if(mb_slug_exists($slug, $database))
-	{
-		$i++;
-		while(mb_slug_exists($slug . '-' . $i, $database))
-		{
-			$i++;
-		}
+    $i = 0;
+    if(mb_slug_exists($slug, $database))
+    {
+        $i++;
+        while(mb_slug_exists($slug . '-' . $i, $database))
+        {
+            $i++;
+        }
 
-		$slug = ($i == 0) ? $slug : $slug . '-' . $i;
-	}
+        $slug = ($i == 0) ? $slug : $slug . '-' . $i;
+    }
 
-	return $slug;
+    return $slug;
 }
 
 function mb_slug_exists($slug, $database)
 {
-	$slug = $database->real_escape_string($slug);
-	$sql = "SELECT `post_id` FROM `miniblog` WHERE `post_slug` = '{$slug}' LIMIT 0, 1";
-	$results = mb_query($sql, $database);
+    $slug = $database->real_escape_string($slug);
+    $sql = "SELECT `post_id` FROM `miniblog` WHERE `post_slug` = '{$slug}' LIMIT 0, 1";
+    $results = mb_query($sql, $database);
 
-	$slug_exists = null;
-	if($results->num_rows == 1)
-	{
+    $slug_exists = null;
+    if($results->num_rows == 1)
+    {
         $result->close();
-		$slug_exists = true;
-	}
-	else
-	{
-		$slug_exists = false;
-	}
+        $slug_exists = true;
+    }
+    else
+    {
+        $slug_exists = false;
+    }
 
-	return $slug_exists;
+    return $slug_exists;
 }
 
 function generate_option_list($list_items = array(), $selected)
 {
-	$html = "";
+    $html = "";
     foreach($list_items as $value => $label)
     {
 
@@ -114,7 +114,7 @@ function get_category_names_for_ids($category_ids, $database)
 
 function get_category_name_for_id($category_id, $database)
 {
-	$category_name = null;
+    $category_name = null;
     $category_id_clean = $database->real_escape_string($category_id);
     $sql = "SELECT * FROM miniblog_category WHERE cat_id = {$category_id_clean}";
     $result = mb_query($sql, $database);
@@ -143,7 +143,7 @@ function get_category_id($category_name, $database)
 
     if($result && $result->num_rows >= 1)
     {
-		$category = $result->fetch_assoc();
+        $category = $result->fetch_assoc();
         $category_exists = $category["cat_id"];
     }
 
@@ -179,17 +179,53 @@ function create_category($category_name, $database)
  * This function takes no parameters (besides a database connection) and returns an
  *  associative array of the details about the featured post (including content).
  */
-function get_featured_post($database)
+function get_featured_post($database, $id_only=false)
 {
-	// Don't show a non-published post, ever!
-	$sql = "SELECT * FROM `miniblog` WHERE `featured` = 1 AND `published` = 1";
+    // Don't show a non-published post, ever!
+    $sql = "SELECT * FROM `miniblog` WHERE `featured` = 1 AND `published` = 1";
 
-	$result = mb_query($sql, $database);
+    $result = mb_query($sql, $database);
 
-	$assoc_result = $result->fetch_assoc();
+    $assoc_result = $result->fetch_assoc();
+    if($id_only)
+    {
+        $assoc_result = $assoc_result["post_id"];
+    }
+    // Can't do this all in one step anymore, some PHP installations don't like it very much.
+    return $assoc_result;
+}
 
-	// Can't do this all in one step anymore, some PHP installations don't like it very much.
-	return $assoc_result;
+/**
+ *
+ *
+ */
+function set_featured_post($post_id, $database)
+{
+    $return = false;
+
+    if(!$post_id)
+    {
+        return false;
+    }
+    else
+    {
+        $post_id = $database->real_escape_string($post_id);
+    }
+    // Set every other post's featured flag to false
+    $sql = "UPDATE `miniblog` SET `featured` = 0 WHERE `post_id` != $post_id";
+    $result1 = mb_query($sql, $database);
+
+    // Then set the desired post to be the featured one!
+    $sql2 = "UPDATE `miniblog` SET `featured` = 1 WHERE `post_id` = $post_id";
+    $result2 = mb_query($sql2, $database);
+
+
+    if($result1 && $result2)
+    {
+        $return = true;
+    }
+
+    return $return;
 }
 
 /**
@@ -202,52 +238,52 @@ function get_featured_post($database)
  */
 function fill_post_template($post, $database)
 {
-	$config = mb_config($database);
-	$post_category_name = get_category_name_for_id($post['post_category'], $database);
+    $config = mb_config($database);
+    $post_category_name = get_category_name_for_id($post['post_category'], $database);
 
-	$vars = array(
-		'postId' => $post['post_id'],
-		'postUrl' => ($config['use-modrewrite'] == 1) ? $post['post_slug'] : $config['miniblog-filename'] . '?post=' . $post['post_slug'],
-		'postTitle' => stripslashes($post['post_title']),
-		'postDate' => date($config['date-format'], $post['date']),
-		'postContent' => stripslashes($post['post_content']),
-		'postCategoryName' => $post_category_name,
+    $vars = array(
+        'postId' => $post['post_id'],
+        'postUrl' => ($config['use-modrewrite'] == 1) ? $post['post_slug'] : $config['miniblog-filename'] . '?post=' . $post['post_slug'],
+        'postTitle' => stripslashes($post['post_title']),
+        'postDate' => date($config['date-format'], $post['date']),
+        'postContent' => stripslashes($post['post_content']),
+        'postCategoryName' => $post_category_name,
         'postCategoryLink' => $post['post_category'] != null ? "?category={$post_category_name}" : ""
-	);
+    );
 
-	return $vars;
+    return $vars;
 }
 
 function get_user_from_db($username, $password, $database)
 {
-	$user_object = false;
-	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-	$sql = "SELECT * FROM `miniblog_user` WHERE `username` = '{$username}' AND `password` = '{$hashed_password}'";
-	$id = $dbusername = $dbpassword = null;
+    $user_object = false;
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $sql = "SELECT * FROM `miniblog_user` WHERE `username` = '{$username}' AND `password` = '{$hashed_password}'";
+    $id = $dbusername = $dbpassword = null;
 
-	$result = mb_query($sql, $database);
+    $result = mb_query($sql, $database);
 
-	if($result)
-	{
-		$user_info = $result->fetch_assoc();
-		$dbusername = $user_info['username'];
-		$dbpassword = $user_info['password'];
-		$id = $user_info['user_id'];
-		$user_object = new User($dbusername, $dbpassword, $id);
-	}
+    if($result)
+    {
+        $user_info = $result->fetch_assoc();
+        $dbusername = $user_info['username'];
+        $dbpassword = $user_info['password'];
+        $id = $user_info['user_id'];
+        $user_object = new User($dbusername, $dbpassword, $id);
+    }
 
-	return $user_object;
+    return $user_object;
 }
 
 /**
- * optional_param
+ * get_value
  *
  * Params:
  *   $array - an array to get a value from
  *   $expected_index - an index that you want to retrieve the value for
  *   $default - the value you want if the index doesn't exist
  */
-function optional_param($array, $expected_index, $default)
+function get_value($array, $expected_index, $default)
 {
     if(isset($array[$expected_index]))
     {
@@ -257,4 +293,93 @@ function optional_param($array, $expected_index, $default)
     {
         return $default;
     }
+}
+
+
+function get_options($config_name, $database)
+{
+    $sql = "SELECT * FROM `miniblog_config`";
+
+    if($config_name)
+    {
+        $sql .= " WHERE `config_name` = '{$config_name}'";
+    }
+
+    $result = mb_query($sql, $database);
+
+    $result_array = array();
+    while($row = $result->fetch_assoc())
+    {
+        $result_array[] = $row;
+    }
+
+    return $result_array;
+}
+
+function get_posts($post_id, $limit=1000, $orderby="date", $database)
+{
+    if(!$post_id instanceof int)
+    {
+        $post_id = null;
+    }
+    $sql = "SELECT * FROM `miniblog`";
+
+    if($post_id)
+    {
+        $post_id = $database->real_escape_string($post_id);
+        $sql .= " WHERE `post_id` = {$post_id}";
+    }
+
+    if($orderby)
+    {
+        $orderby = $database->real_escape_string($orderby);
+        $sql .= " ORDER BY {$orderby}";
+    }
+
+    if($limit)
+    {
+        $limit = $database->real_escape_string($limit);
+        $sql .= " LIMIT 0, {$limit}";
+    }
+
+    $posts = mb_query($sql, $database);
+
+    $return = array();
+
+    while($row = $posts->fetch_assoc())
+    {
+        // Grab the post category name, to get rid of a race condition in the posts list
+        $row["post_category_name"] = get_category_name_for_id($row["post_category"], $database);
+        $return[] = $row;
+    }
+
+    return $return;
+}
+
+function publish_post($post_id, $published, $database)
+{
+    $return = false;
+
+    $post_id = $database->real_escape_string($post_id);
+    $published = $database->real_escape_string($published);
+
+    // Flip dat bit
+    $new_publish = $published == 1 ? 0 : 1;
+    $sql = "UPDATE `miniblog` SET `published` = {$new_publish} WHERE `post_id` = {$post_id}";
+    $result = mb_query($sql, $database);
+    if($result)
+    {
+        $return = $new_publish;
+    }
+    return $return;
+}
+
+function delete_post($post_id, $database)
+{
+    $post_id = $database->real_escape_string($post_id);
+    // Delete the post
+    $sql = "DELETE FROM `miniblog` where `post_id` = {$post_id}";
+    $result = mb_query($sql, $database);
+
+    return $result;
 }

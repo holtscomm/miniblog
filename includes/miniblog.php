@@ -17,7 +17,7 @@ if(!$database)
 
 $config = mb_config($database);
 
-$post = (string) optional_param($_GET, 'post', false);
+$post = (string) get_value($_GET, 'post', false);
 // $post = (string) $database->real_escape_string($_GET['post']);
 $page = (int) $database->real_escape_string(intval($_GET['page']));
 $ppp = (int) intval($config['posts-per-page']);
