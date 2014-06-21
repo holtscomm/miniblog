@@ -7,10 +7,25 @@ include('includes/miniblog.php');
 <html lang="en">
 <head>
 <title>Miniblog Index</title>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="includes/js/moment.min.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <!-- Latest compiled and minified JavaScript -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="includes/js/knockout-3.1.0.js"></script>
+<script type="text/javascript" src="includes/js/MB.js"></script>
+<script type="text/javascript" src="includes/js/MB.postmodel.js"></script>
+<script type="text/javascript" src="includes/js/MB.posts.js"></script>
+
+<script id='postTemplate' type='text/html'>
+<div class="post" data-bind="attr: { 'id': postId }">
+	<h4><a data-bind="attr: { 'href': postUrl }, text: postTitle"></a></h4>
+	<span class="date" data-bind="text: publishDate"></span>
+	<div class="post-content" data-bind="html: postContent"></div>
+	<a data-bind="href: postCategoryLink">View more posts from this category</a>
+</div>
+</script>
 </head>
 
 <body>
@@ -18,29 +33,41 @@ include('includes/miniblog.php');
 	<div class="page-header">
 	    <h1>Miniblog Default</h1>
 	</div>
+	<div class="col-md-8" data-bind="template: { name: 'postTemplate', foreach: posts }"></div>
 	<?php
 	if($featured_post && !$single)
-	 {
+	{
 		?>
-	<div class="jumbotron">
-		<?= $featured_post ?>
-	</div>
+	<div class="col-md-4" data-bind="template: { name: 'postTemplate', data: featuredPost }"></div>
 	<?php
-     }
+	}
 	?>
-	<div>
-    	<?= $miniblog_posts ?>
-	</div>
 	<div class="navigation">
-		<?php if(!$single) { ?>
-			<?php if($miniblog_previous) {?> <p class="previous-link"><?=$miniblog_previous?></p><?php } ?>
-			<?php if($miniblog_next) {?> <p class="next-link"><?=$miniblog_next?></p> <?php } ?>
-		<?php } ?>
-		<?php if($single) { ?>
-			<p class="previous-link"><a href="<?=$config['miniblog-filename']?>">&laquo; return to posts</a></p>
-		<?php } ?>
-		<div class="clear"></div>
+		<?php
+		// If not viewing a single post, show some older/newer post links
+		if(!$single)
+		{
+			if($miniblog_previous)
+			{
+				echo "<p class='previous-link'>{$miniblog_previous}</p>";
+			}
+			if($miniblog_next)
+			{
+				echo "<p class='next-link'>{$miniblog_next}</p>";
+			}
+		}
+		// If viewing a single post, show the return to posts link
+		else
+		{
+			echo "<p class='previous-link'><a href='" . $config['miniblog-filename'] . "'>&laquo; return to posts</a></p>";
+		}
+		?>
 	</div>
 </div>
+<script type='text/javascript'>
+	$(function() {
+		ko.applyBindings(new PostViewModel(<?= json_encode($miniblog_posts) ?>, <?= json_encode($featured_post) ?>))
+	})
+</script>
 </body>
 </html>

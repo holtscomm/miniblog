@@ -24,6 +24,8 @@ $return = array();
 
 while($row = $posts->fetch_assoc())
 {
+    // Grab the post category name, to get rid of a race condition in the posts list
+    $row["post_category_name"] = get_category_name_for_id($row["post_category"], $database);
     $return[] = $row;
 }
 

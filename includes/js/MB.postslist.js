@@ -9,38 +9,6 @@ MB.CONST.Posts = {
     REMOVE_LINK: MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "post/remove.php"
 };
 
-function PostModel(postId, postSlug, postTitle, postContent, postCategory, date, published, categoryMap) {
-    var self = this;
-
-    self.postId = postId;
-    self.postSlug = postSlug;
-    self.postTitle = postTitle;
-    self.postContent = postContent;
-    self.postCategoryId = postCategory;
-    self.postCategoryName = categoryMap[postCategory];
-    self.publishDate = moment.unix(date).format("MMMM Do, YYYY");
-    self.published = ko.observable(parseInt(published));
-    // Convenience links
-    self.postCategoryLink = ko.computed(function() {
-        if(self.postCategoryId) {
-            return MB.CONST.SiteSettings.DOCUMENT_ROOT + "?category=" + self.postCategoryName;
-        }
-        else {
-            return undefined;
-        }
-    });
-    self.editLink = MB.CONST.SiteSettings.ADMIN_DOCUMENT_ROOT + "edit.php?mode=edit&id=" + postId;
-    self.viewLink = ko.computed(function() {
-        var first = MB.CONST.SiteSettings.DOCUMENT_ROOT + "?post=" + self.postSlug;
-        if(self.published()) {
-            return first;
-        }
-        else {
-            return first + "&preview=y";
-        }
-    });
-}
-
 function PostListViewModel() {
     var self = this;
 
@@ -60,6 +28,7 @@ function PostListViewModel() {
                     item.post_title,
                     item.post_content,
                     item.post_category,
+                    item.post_category_name,
                     item.date,
                     item.published,
                     item.featured,
