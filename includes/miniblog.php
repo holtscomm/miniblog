@@ -15,9 +15,9 @@ if(!$database)
 	die("Could not connect to MySQL database, check the settings in config.php");
 }
 
-$config = mb_config($database);
+$config = get_options($database);
 
-$post = (string) optional_param($_GET, 'post', false);
+$post = (string) get_value($_GET, 'post', false);
 // $post = (string) $database->real_escape_string($_GET['post']);
 $page = (int) $database->real_escape_string(intval($_GET['page']));
 $ppp = (int) intval($config['posts-per-page']);
@@ -58,11 +58,6 @@ if($result->num_rows > 0)
 {
 	while($post_each = $result->fetch_assoc())
 	{
-		// $output = fill_post_template($post, $database);
-
-		// $miniblog_posts .= $output;
-
-		// $miniblog_posts[] = fill_post_template($post, $database);
 		$post_each["post_category_name"] = $category_name;
 		$miniblog_posts[] = $post_each;
 	}

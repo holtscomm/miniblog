@@ -8,7 +8,6 @@ include('header.php');
             <th>Post Name</th>
             <th>Post Category</th>
             <th>Published?</th>
-            <th>Featured?</th>
             <th>Posted Date</th>
             <th>Actions</th>
         </tr>
@@ -24,9 +23,9 @@ include('header.php');
                 <span data-bind="ifnot: postCategoryId">&lt;none&gt;</span>
             </td>
             <td><input type="checkbox" data-bind="checked: published, click: $parent.publishPost"/></td>
-            <td><input type="radio" name="featuredGroup" data-bind="value: postId, enable: published, checked: $parent.featuredPostId"/></td>
             <td data-bind="text: publishDate"></td>
-            <td><a href="#" data-bind="click: $parent.deletePost.bind($data)">Delete post</a></td>
+            <td><button class="btn btn-primary" data-bind="enable: published, click: $parent.setFeaturedPost"/>Feature</button>
+                <a href="#" data-bind="click: $parent.deletePost.bind($data)"><button class="btn btn-danger">Delete</button></a></td>
         </tr>
     </tbody>
 </table>

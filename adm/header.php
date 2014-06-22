@@ -22,7 +22,7 @@ if(!$database)
 {
     die("Could not connect to MySQL database, check the settings in config.php");
 }
-$config = mb_config($database);
+$config = get_options($database);
 ?>
 <!DOCTYPE html>
 <html lang="en">

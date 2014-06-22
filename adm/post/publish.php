@@ -9,29 +9,16 @@ include('../../includes/functions.php');
 $database = mb_connect($sqlconfig);
 unset($sqlconfig);
 
-if(isset($_REQUEST['postid']) && isset($_REQUEST['published']))
-{
-    $post_id = $_REQUEST['postid'];
-    $published = $_REQUEST['published'];
-}
-else
-{
-    die("postid and published are required for this endpoint");
-}
+$post_id = get_value($_REQUEST, 'postId', false);
+$published = get_value($_REQUEST, 'published', false);
 
 if($post_id)
 {
-    // Flip dat bit
-    $new_publish = $published ? 0 : 1;
-    $sql = "UPDATE `miniblog` SET `published` = {$new_publish} WHERE `post_id` = $post_id";
-    $result = mb_query($sql, $database);
+    $post_is_published = publish_post($post_id, $published, $database);
 
     header('Content-Type: application/json');
-    if($result)
-    {
-        $return = array(
-            "published" => $new_publish
-        );
-        echo json_encode($return);
-    }
+    $return = array(
+        "published" => $post_is_published
+    );
+    echo json_encode($return);
 }
