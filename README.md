@@ -28,29 +28,27 @@ The default password for the admin area is `password`. It is recommended that yo
 
 ### Modify the post template to your needs
 
-The template "engine" exposes some variables that you can use in your templates. Here is the default template, which uses all of the available variables:
+Miniblog uses a Knockout template to render posts. The template is found in src/index.php:
 
 ```html
-<div class="post" id="post-$postid$">
-    <h4><a href="$posturl$">$posttitle$</a></h4>
-    <span class="date">$postdate$</span>
-    <div class="post-content">
-        $postcontent$
-    </div>
-    <a href="?category=$postcategoryname$">View more posts from this category</a>
+<div class="post" data-bind="attr: { 'id': postId }">
+	<h4><a data-bind="attr: { 'href': postUrl }, text: postTitle"></a></h4>
+	<span class="date" data-bind="text: publishDate"></span>
+	<div class="post-content" data-bind="html: postContent"></div>
+	<a data-bind="href: postCategoryLink">View more posts from this category</a>
 </div>
 ```
 
 #### Template variables and their contents
 
-- `$postid$` - The id of the post in the database
-- `$posturl$` - The relative url of the post, i.e. `index.php?post=example`
-- `$posttitle$` - The title of the post
-- `$postdate$` - The date the post was created - will not change
-- `$postcontent$` - The HTML content of the post
-- `$postcategoryname$` - The category this post is in. Can be blank.
+- `postId` - The id of the post in the database
+- `postUrl` - The relative url of the post, i.e. `index.php?post=example`
+- `postTitle` - The title of the post
+- `publishDate` - The date the post was created - will not change
+- `postContent` - The HTML content of the post
+- `postCategoryLink` - The category this post is in. Can be blank.
 
-The power of the template comes in the fact that it is very simple to modify to conform with your existing CSS or other styling.
+The power of the template comes in the fact that it is very simple to modify to conform with your existing CSS or other styling, just add classes to the various tags as required.
 
 ### Printing posts to a page
 
@@ -58,15 +56,12 @@ To get at the list of posts, you should have the code at the top of the page you
 
 ```php
 <?php
-define('IN_BLOG', true);
-define('PATH', '');
 include('includes/miniblog.php');
 ?>
 ```
 
 Including that code will expose a few variables for you to use, and that can be seen in effect on the current `index.php` file. Here are the list of variables and their contents:
 
-- `$miniblog_posts` - All of the posts in the database, in the form of your `template.html`. Echoing this variable to the page will print out all of your posts (defaulting to 5)
 - `$single` - Boolean - true if the user is viewing a single post
 - `$miniblog_previous` - String - Will contain the link to the list of posts that are earlier than the ones currently displayed
 - `$miniblog_next` - String - Will contain the link to the list of posts that are later than the ones currently displayed
