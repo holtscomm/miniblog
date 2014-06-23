@@ -1,11 +1,6 @@
 <?php
-if(!defined('IN_BLOG'))
-{
-	exit;
-}
-
-include(PATH . 'includes/config.php');
-include(PATH . 'includes/functions.php');
+include('config.php');
+include('functions.php');
 
 $database = mb_connect($sqlconfig);
 unset($sqlconfig);

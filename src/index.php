@@ -1,6 +1,4 @@
 <?php
-define('IN_BLOG', true);
-define('PATH', '');
 include('includes/miniblog.php');
 ?>
 <!DOCTYPE html>
