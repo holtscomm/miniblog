@@ -1,0 +1,8 @@
+{
+  "name": "miniblog",
+  "version": "0.8.0",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-imagemin": "^0.7.1"
+  }
+}

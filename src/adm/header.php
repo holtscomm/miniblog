@@ -28,15 +28,15 @@ $config = get_options($database);
 <html lang="en">
 <head>
 <title>Miniblog Admin</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <script type="text/javascript" src="images/dialog.js"></script>
 <script type="text/javascript" src="../includes/js/tinymce/tinymce.min.js"></script>
-<script type="text/javascript" src="../includes/js/knockout-3.1.0.js"></script>
-<script type="text/javascript" src="../includes/js/moment.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../includes/js/vendor/knockout-3.1.0.js"></script>
+<script type="text/javascript" src="../includes/js/vendor/moment.min.js"></script>
+<script src="../includes/js/vendor/jquery-1.11.1.min.js"></script>
+
+<link rel="stylesheet" href="../includes/css/vendor/bootstrap.min.css">
+<script src="../includes/js/vendor/bootstrap.min.js"></script>
+
 <script type="text/javascript" src="../includes/js/MB.js"></script>
 <script type="text/javascript" src="../includes/js/MB.postmodel.js"></script>
 <script type="text/javascript" src="../includes/js/MB.postslist.js"></script>

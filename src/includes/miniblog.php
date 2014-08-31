@@ -23,8 +23,8 @@ $preview = (string) $database->real_escape_string($_GET['preview']);
 
 $sql = "SELECT * FROM `miniblog` WHERE";
 
-$sql .= $preview == "" ? "`published` = 1" :
-						 "`published` is not null";
+$sql .= $preview == "" ? " `published` = 1" :
+						 " `published` is not null";
 
 if($category_id != null)
 {
@@ -38,6 +38,8 @@ else
 {
 	$sql .= " ORDER BY `date` DESC LIMIT $from, $ppp";
 }
+
+echo $sql;
 
 $result = mb_query($sql, $database);
 
