@@ -3,6 +3,29 @@
  */
 var MB = (MB || {});
 
+ko.bindingHandlers.yourBindingName = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // This will be called when the binding is first applied to an element
+        // Set up any initial state, event handlers, etc. here
+        
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        // This will be called once when the binding is first applied to an element,
+        // and again whenever any observables/computeds that are accessed change
+        // Update the DOM element based on the supplied values here.
+    }
+};
+
+var postTemplate = '' +
+    '<script type="text/html" id="post-template">'
+        '<div class="post" data-bind="\'attr\': { \'id\': postId }">' + 
+            '<h4><a data-bind="\'attr\': { \'href\': postUrl }, \'text\': postTitle"></a></h4>' +
+            '<span class="date" data-bind="\'text\': publishDate"></span>' + 
+            '<div class="post-content" data-bind="\'html\': postContent"></div>' + 
+            '<a data-bind="\'href\': postCategoryLink">View more posts from this category</a>' + 
+        '</div>' +
+    '</script>';
+
 function PostViewModel(postData, featuredPostData, singlePost) {
     var self = this;
     self.postData = postData;

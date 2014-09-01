@@ -39,8 +39,6 @@ else
 	$sql .= " ORDER BY `date` DESC LIMIT $from, $ppp";
 }
 
-echo $sql;
-
 $result = mb_query($sql, $database);
 
 $total_post_sql = "SELECT COUNT(*) FROM `miniblog` WHERE `published` = 1";
