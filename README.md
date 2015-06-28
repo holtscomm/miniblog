@@ -3,7 +3,7 @@ HoltsComm Miniblog
 
 ## Requirements
 
-1. PHP 5+
+1. PHP 5.4+
 2. Access to a MySQL database
 
 ## Installation Instructions

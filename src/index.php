@@ -9,12 +9,6 @@ include('includes/miniblog.php');
 <script type="text/javascript" src="includes/js/vendor/moment.min.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="includes/css/vendor/bootstrap.min.css">
-<!-- Latest compiled and minified JavaScript -->
-<script src="includes/js/vendor/bootstrap.min.js"></script>
-<script type="text/javascript" src="includes/js/vendor/knockout-3.1.0.js"></script>
-<script type="text/javascript" src="includes/js/MB.js"></script>
-<script type="text/javascript" src="includes/js/MB.postmodel.js"></script>
-<script type="text/javascript" src="includes/js/MB.posts.js"></script>
 
 <script id='postTemplate' type='text/html'>
 <div class="post" data-bind="attr: { 'id': postId }">
@@ -62,6 +56,13 @@ include('includes/miniblog.php');
 		?>
 	</div>
 </div>
+
+<script src="includes/js/vendor/bootstrap.min.js"></script>
+<script type="text/javascript" src="includes/js/vendor/knockout-3.1.0.js"></script>
+<script type="text/javascript" src="includes/js/MB.js"></script>
+<script type="text/javascript" src="includes/js/MB.postmodel.js"></script>
+<script type="text/javascript" src="includes/js/MB.posts.js"></script>
+
 <script type='text/javascript'>
 	$(function() {
 		ko.applyBindings(new PostViewModel(<?= json_encode($miniblog_posts) ?>, <?= json_encode($featured_post) ?>, '<?= $single ?>'))
