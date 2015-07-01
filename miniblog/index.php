@@ -5,8 +5,6 @@ include('includes/miniblog.php');
 <html lang="en">
 <head>
 <title>Miniblog Index</title>
-<script src="includes/js/vendor/jquery-1.11.1.min.js"></script>
-<script type="text/javascript" src="includes/js/vendor/moment.min.js"></script>
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="includes/css/vendor/bootstrap.min.css">
 
@@ -57,6 +55,9 @@ include('includes/miniblog.php');
 	</div>
 </div>
 
+
+<script src="includes/js/vendor/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" src="includes/js/vendor/moment.min.js"></script>
 <script src="includes/js/vendor/bootstrap.min.js"></script>
 <script type="text/javascript" src="includes/js/vendor/knockout-3.1.0.js"></script>
 <script type="text/javascript" src="includes/js/MB.js"></script>

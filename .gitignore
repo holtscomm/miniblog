@@ -3,3 +3,4 @@ tags
 node_modules/*
 .sublime-grunt.cache
 .tags*
+miniblog/includes/config.php

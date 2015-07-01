@@ -28,7 +28,7 @@ The default password for the admin area is `password`. It is recommended that yo
 
 ### Modify the post template to your needs
 
-Miniblog uses a Knockout template to render posts. The template is found in src/index.php:
+Miniblog uses a Knockout template to render posts. The template is found in miniblog/index.php:
 
 ```html
 <div class="post" data-bind="attr: { 'id': postId }">
