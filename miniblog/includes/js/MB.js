@@ -7,6 +7,6 @@ var MB = $.extend(MB, {
 });
 
 MB.CONST.SiteSettings = {
-    DOCUMENT_ROOT: "/miniblog/",
-    ADMIN_DOCUMENT_ROOT: "/miniblog/adm/"
-}
+    DOCUMENT_ROOT: "/",
+    ADMIN_DOCUMENT_ROOT: "/adm/"
+};

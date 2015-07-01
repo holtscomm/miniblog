@@ -67,7 +67,7 @@ include('includes/miniblog.php');
 <script type='text/javascript'>
 	$(function() {
 		ko.applyBindings(new PostViewModel(<?= json_encode($miniblog_posts) ?>, <?= json_encode($featured_post) ?>, '<?= $single ?>'))
-	})
+	});
 </script>
 </body>
 </html>

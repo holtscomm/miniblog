@@ -53,7 +53,7 @@ function PostListViewModel() {
     self.setFeaturedPost = function(post) {
         var data = {
             postId: post.postId
-        }
+        };
         $.post(MB.CONST.Posts.FEATURE_LINK, data, function(returnedData) {
             ko.utils.arrayForEach(self.posts, function(postData) {
                 postData.featured(0);
@@ -62,7 +62,7 @@ function PostListViewModel() {
             post.featured(true);
             self.featuredPostId(post.postId);
         });
-    }
+    };
 
     /**
      * publishPost will "flip the bit" of the published status, so if it is published,
