@@ -2,6 +2,9 @@
   "name": "miniblog",
   "version": "0.8.0",
   "scripts": {
-
+      "jsx": "jsx --watch miniblog/includes/jsx/ miniblog/includes/js/ -x jsx"
+  },
+  "dependencies": {
+    "react-tools": "^0.13.3"
   }
 }

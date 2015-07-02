@@ -4,3 +4,5 @@ node_modules/*
 .sublime-grunt.cache
 .tags*
 miniblog/includes/config.php
+npm-debug.log
+miniblog/includes/js/.module-cache/*

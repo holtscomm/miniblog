@@ -20,6 +20,7 @@ include('includes/miniblog.php');
 
 <body>
 <div class="container">
+	<div id="attacher"></div>
 	<div class="page-header">
 	    <h1>Miniblog Default</h1>
 	</div>
@@ -60,13 +61,15 @@ include('includes/miniblog.php');
 <script type="text/javascript" src="includes/js/vendor/moment.min.js"></script>
 <script src="includes/js/vendor/bootstrap.min.js"></script>
 <script type="text/javascript" src="includes/js/vendor/knockout-3.1.0.js"></script>
+<script type="text/javascript" src="includes/js/vendor/react.js"></script>
 <script type="text/javascript" src="includes/js/MB.js"></script>
 <script type="text/javascript" src="includes/js/MB.postmodel.js"></script>
 <script type="text/javascript" src="includes/js/MB.posts.js"></script>
+<script type="text/javascript" src="includes/js/miniblog.js"></script>
 
 <script type='text/javascript'>
 	$(function() {
-		ko.applyBindings(new PostViewModel(<?= json_encode($miniblog_posts) ?>, <?= json_encode($featured_post) ?>, '<?= $single ?>'))
+		// ko.applyBindings(new PostViewModel(<?= json_encode($miniblog_posts) ?>, <?= json_encode($featured_post) ?>, '<?= $single ?>'))
 	});
 </script>
 </body>
