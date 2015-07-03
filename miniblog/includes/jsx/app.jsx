@@ -12,7 +12,7 @@ var routes = (
 var RouteHandler = Router.RouteHandler;
 
 var App = React.createClass({
-  render: () {
+  render: () => {
     return (
       <div>
         <h1>App</h1>

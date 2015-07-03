@@ -1,4 +1,4 @@
-;(function (React, $) {
+;(function (React, MB) {
   'use strict';
 
   var Post = React.createClass({
@@ -18,5 +18,11 @@
     }
   });
 
-  React.render(<PostList />, document.getElementById('attacher'));
-} (window.React, window.$))
+  MB.renderPosts = function (posts, featured, single) {
+    if (single) {
+      // Do something a bit differently
+    }
+
+    React.render(<PostList posts=posts />, document.getElementById('attacher'));
+  }
+} (window.React, window.MB))
