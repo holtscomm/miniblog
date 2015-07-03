@@ -2,9 +2,17 @@
   "name": "miniblog",
   "version": "0.8.0",
   "scripts": {
-      "jsx": "jsx --watch miniblog/includes/jsx/ miniblog/includes/js/ -x jsx"
+    "dev": "webpack miniblog/includes/jsx/app.jsx miniblog/includes/js/app.js -d --module-bind 'jsx=babel-loader'",
+    "jsx": "jsx --watch miniblog/includes/jsx/ miniblog/includes/js/ -x jsx",
+    "prod": ""
   },
   "dependencies": {
-    "react-tools": "^0.13.3"
+    "babel-core": "^5.6.15",
+    "babel-loader": "^5.3.0",
+    "node-libs-browser": "^0.5.2",
+    "react": "^0.13.3",
+    "react-router": "^0.13.3",
+    "react-tools": "^0.13.3",
+    "webpack": "^1.10.1"
   }
 }
